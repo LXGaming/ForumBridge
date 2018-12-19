@@ -1,0 +1,6 @@
+name: ${name}
+main: nz.co.lolnet.forumbridge.bungee.BungeePlugin
+version: ${version}
+description: Forum Bridge
+author: LX_Gaming
+website: https://www.lolnet.co.nz/
