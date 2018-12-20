@@ -19,19 +19,15 @@ package nz.co.lolnet.forumbridge.bungee;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import nz.co.lolnet.api.LolnetAPI;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
+import nz.co.lolnet.forumbridge.common.manager.IntegrationManager;
 
 public class BungeeListener implements Listener {
     
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        LolnetAPI.getInstance().getForumEndpoint().updateMinecraftUsername(event.getPlayer().getUniqueId(), event.getPlayer().getName()).async(success -> {
-            if (success) {
-                ForumBridge.getInstance().getLogger().debug("Successfully updated {} ({})", event.getPlayer().getName(), event.getPlayer().getUniqueId());
-            }
-        }, failure -> {
-            ForumBridge.getInstance().getLogger().debug("Failed to update {} ({})", event.getPlayer().getName(), event.getPlayer().getUniqueId(), failure);
+        BungeePlugin.getInstance().getProxy().getScheduler().runAsync(BungeePlugin.getInstance(), () -> {
+            IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
+            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         });
     }
 }

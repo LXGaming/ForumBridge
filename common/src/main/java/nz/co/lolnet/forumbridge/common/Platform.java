@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package nz.co.lolnet.forumbridge.common.configuration;
+package nz.co.lolnet.forumbridge.common;
 
-import nz.co.lolnet.forumbridge.common.util.Toolbox;
+import java.nio.file.Path;
 
-import java.util.Map;
-
-public class Config {
+public interface Platform {
     
-    private boolean debug = false;
-    private Map<String, String> groups = Toolbox.newHashMap();
-    
-    public boolean isDebug() {
-        return debug;
-    }
-    
-    public Map<String, String> getGroups() {
-        return groups;
-    }
+    Path getPath();
 }

@@ -19,18 +19,18 @@ package nz.co.lolnet.forumbridge.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import nz.co.lolnet.forumbridge.common.ForumBridge;
+import nz.co.lolnet.forumbridge.common.Platform;
 import nz.co.lolnet.forumbridge.common.configuration.Config;
-import nz.co.lolnet.forumbridge.common.configuration.Configuration;
 import nz.co.lolnet.forumbridge.common.util.Logger;
 import nz.co.lolnet.forumbridge.common.util.Reference;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 @Plugin(
         id = Reference.ID,
@@ -38,9 +38,10 @@ import java.util.Optional;
         version = Reference.VERSION,
         description = Reference.DESCRIPTION,
         url = Reference.WEBSITE,
-        authors = {Reference.AUTHORS}
+        authors = {Reference.AUTHORS},
+        dependencies = {@Dependency(id = "luckperms")}
 )
-public class VelocityPlugin {
+public class VelocityPlugin implements Platform {
     
     private static VelocityPlugin instance;
     
@@ -51,27 +52,23 @@ public class VelocityPlugin {
     @DataDirectory
     private Path path;
     
-    private Configuration configuration;
-    
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
         instance = this;
-        configuration = new VelocityConfiguration(getPath());
-        getConfiguration().loadConfiguration();
         
-        new ForumBridge().getLogger()
+        ForumBridge forumBridge = new ForumBridge(this);
+        forumBridge.getLogger()
                 .add(Logger.Level.INFO, LoggerFactory.getLogger(Reference.NAME)::info)
                 .add(Logger.Level.WARN, LoggerFactory.getLogger(Reference.NAME)::warn)
                 .add(Logger.Level.ERROR, LoggerFactory.getLogger(Reference.NAME)::error)
                 .add(Logger.Level.DEBUG, message -> {
-                    if (getConfig().map(Config::isDebug).orElse(false)) {
+                    if (ForumBridge.getInstance().getConfig().map(Config::isDebug).orElse(false)) {
                         LoggerFactory.getLogger(Reference.NAME).info(message);
                     }
                 });
         
-        getConfiguration().saveConfiguration();
+        forumBridge.loadForumBridge();
         getProxy().getEventManager().register(getInstance(), new VelocityListener());
-        ForumBridge.getInstance().getLogger().info("{} v{} has started.", Reference.NAME, Reference.VERSION);
     }
     
     public static VelocityPlugin getInstance() {
@@ -82,19 +79,8 @@ public class VelocityPlugin {
         return proxy;
     }
     
+    @Override
     public Path getPath() {
         return path;
-    }
-    
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-    
-    public Optional<Config> getConfig() {
-        if (getConfiguration() != null) {
-            return Optional.ofNullable(getConfiguration().getConfig());
-        }
-        
-        return Optional.empty();
     }
 }

@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     provided("com.google.code.gson:gson:2.8.5")
+    provided("me.lucko.luckperms:luckperms-api:4.3")
     provided("nz.co.lolnet:lolnetapi-api:2.0.1")
 }
 

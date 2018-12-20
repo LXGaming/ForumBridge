@@ -18,52 +18,41 @@ package nz.co.lolnet.forumbridge.bungee;
 
 import net.md_5.bungee.api.plugin.Plugin;
 import nz.co.lolnet.forumbridge.common.ForumBridge;
+import nz.co.lolnet.forumbridge.common.Platform;
 import nz.co.lolnet.forumbridge.common.configuration.Config;
-import nz.co.lolnet.forumbridge.common.configuration.Configuration;
 import nz.co.lolnet.forumbridge.common.util.Logger;
-import nz.co.lolnet.forumbridge.common.util.Reference;
 
-import java.util.Optional;
+import java.nio.file.Path;
 
-public class BungeePlugin extends Plugin {
+public class BungeePlugin extends Plugin implements Platform {
     
     private static BungeePlugin instance;
-    private Configuration configuration;
     
     @Override
     public void onEnable() {
         instance = this;
-        configuration = new BungeeConfiguration(getDataFolder().toPath());
-        getConfiguration().loadConfiguration();
         
-        new ForumBridge().getLogger()
+        ForumBridge forumBridge = new ForumBridge(this);
+        forumBridge.getLogger()
                 .add(Logger.Level.INFO, getLogger()::info)
                 .add(Logger.Level.WARN, getLogger()::warning)
                 .add(Logger.Level.ERROR, getLogger()::severe)
                 .add(Logger.Level.DEBUG, message -> {
-                    if (getConfig().map(Config::isDebug).orElse(false)) {
+                    if (ForumBridge.getInstance().getConfig().map(Config::isDebug).orElse(false)) {
                         getLogger().info(message);
                     }
                 });
         
+        forumBridge.loadForumBridge();
         getProxy().getPluginManager().registerListener(getInstance(), new BungeeListener());
-        getConfiguration().saveConfiguration();
-        ForumBridge.getInstance().getLogger().info("{} v{} started", Reference.NAME, Reference.VERSION);
     }
     
     public static BungeePlugin getInstance() {
         return instance;
     }
     
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-    
-    public Optional<Config> getConfig() {
-        if (getConfiguration() != null) {
-            return Optional.ofNullable(getConfiguration().getConfig());
-        }
-        
-        return Optional.empty();
+    @Override
+    public Path getPath() {
+        return getDataFolder().toPath();
     }
 }

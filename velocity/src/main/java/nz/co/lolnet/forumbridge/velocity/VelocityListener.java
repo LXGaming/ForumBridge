@@ -18,19 +18,15 @@ package nz.co.lolnet.forumbridge.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
-import nz.co.lolnet.api.LolnetAPI;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
+import nz.co.lolnet.forumbridge.common.manager.IntegrationManager;
 
 public class VelocityListener {
     
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
-        LolnetAPI.getInstance().getForumEndpoint().updateMinecraftUsername(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()).async(success -> {
-            if (success) {
-                ForumBridge.getInstance().getLogger().debug("Successfully updated {} ({})", event.getPlayer().getUsername(), event.getPlayer().getUniqueId());
-            }
-        }, failure -> {
-            ForumBridge.getInstance().getLogger().debug("Failed to update {} ({})", event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), failure);
-        });
+        VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
+            IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
+            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
+        }).schedule();
     }
 }

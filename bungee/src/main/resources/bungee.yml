@@ -4,3 +4,4 @@ version: ${version}
 description: Forum Bridge
 author: LX_Gaming
 website: https://www.lolnet.co.nz/
+depends: [LuckPerms]
