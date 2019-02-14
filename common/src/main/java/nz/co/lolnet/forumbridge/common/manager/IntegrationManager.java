@@ -20,6 +20,7 @@ import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import nz.co.lolnet.api.LolnetAPI;
+import nz.co.lolnet.api.data.IdentityData;
 import nz.co.lolnet.forumbridge.common.ForumBridge;
 import nz.co.lolnet.forumbridge.common.configuration.Config;
 import nz.co.lolnet.forumbridge.common.util.Toolbox;
@@ -62,8 +63,8 @@ public final class IntegrationManager {
                 return false;
             }
             
-            long userId = LolnetAPI.getInstance().getForumEndpoint().getUserId(uniqueId).sync();
-            Collection<String> groups = LolnetAPI.getInstance().getForumEndpoint().getGroups(userId).sync();
+            IdentityData identity = LolnetAPI.getInstance().getForumEndpoint().getIdentity(uniqueId).sync();
+            Collection<String> groups = LolnetAPI.getInstance().getForumEndpoint().getGroups(identity.getUserId()).sync();
             
             ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId.toString());
             
