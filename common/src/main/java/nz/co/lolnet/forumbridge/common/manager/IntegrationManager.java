@@ -33,30 +33,33 @@ public final class IntegrationManager {
     
     private static final Map<String, Node> NODES = Toolbox.newHashMap();
     
-    public static void buildNodes() {
+    public static boolean buildNodes() {
         Map<String, String> groups = ForumBridge.getInstance().getConfig().map(Config::getGroups).orElse(null);
         if (groups == null) {
             ForumBridge.getInstance().getLogger().error("Failed to get groups from config");
-            return;
+            return false;
         }
         
+        NODES.clear();
         groups.putIfAbsent("Default", "default");
         for (Map.Entry<String, String> entry : groups.entrySet()) {
             LuckPerms.getApiSafe()
                     .map(api -> api.buildNode("group." + entry.getValue()).build())
-                    .ifPresent(node -> getNodes().put(entry.getKey(), node));
+                    .ifPresent(node -> NODES.put(entry.getKey(), node));
         }
+        
+        return true;
     }
     
-    public static void updateGroups(UUID uniqueId) {
+    public static boolean updateGroups(UUID uniqueId) {
         try {
-            if (getNodes().isEmpty()) {
-                return;
+            if (NODES.isEmpty()) {
+                return false;
             }
             
             User user = LuckPerms.getApi().getUserManager().loadUser(uniqueId).get(30000L, TimeUnit.MILLISECONDS);
             if (user == null) {
-                return;
+                return false;
             }
             
             long userId = LolnetAPI.getInstance().getForumEndpoint().getUserId(uniqueId).sync();
@@ -64,7 +67,7 @@ public final class IntegrationManager {
             
             ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId.toString());
             
-            for (Map.Entry<String, Node> entry : getNodes().entrySet()) {
+            for (Map.Entry<String, Node> entry : NODES.entrySet()) {
                 if (groups.contains(entry.getKey())) {
                     if (!user.hasPermission(entry.getValue()).asBoolean()) {
                         user.setPermission(entry.getValue());
@@ -78,22 +81,24 @@ public final class IntegrationManager {
             
             LuckPerms.getApi().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
             ForumBridge.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId.toString());
+            return true;
         } catch (Exception ex) {
             ForumBridge.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId.toString(), ex.getMessage());
+            return false;
         }
     }
     
-    public static void updateUsername(UUID uniqueId, String username) {
+    public static boolean updateUsername(UUID uniqueId, String username) {
         try {
             if (LolnetAPI.getInstance().getForumEndpoint().updateMinecraftUsername(uniqueId, username).sync()) {
                 ForumBridge.getInstance().getLogger().debug("Successfully updated username for {}", uniqueId.toString());
+                return true;
             }
+            
+            return false;
         } catch (Exception ex) {
             ForumBridge.getInstance().getLogger().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
+            return false;
         }
-    }
-    
-    public static Map<String, Node> getNodes() {
-        return NODES;
     }
 }

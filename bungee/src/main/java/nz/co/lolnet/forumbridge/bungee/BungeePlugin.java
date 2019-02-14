@@ -17,6 +17,8 @@
 package nz.co.lolnet.forumbridge.bungee;
 
 import net.md_5.bungee.api.plugin.Plugin;
+import nz.co.lolnet.forumbridge.bungee.command.ForumBridgeCommand;
+import nz.co.lolnet.forumbridge.bungee.listener.BungeeListener;
 import nz.co.lolnet.forumbridge.common.ForumBridge;
 import nz.co.lolnet.forumbridge.common.Platform;
 import nz.co.lolnet.forumbridge.common.configuration.Config;
@@ -44,6 +46,7 @@ public class BungeePlugin extends Plugin implements Platform {
                 });
         
         forumBridge.loadForumBridge();
+        getProxy().getPluginManager().registerCommand(getInstance(), new ForumBridgeCommand());
         getProxy().getPluginManager().registerListener(getInstance(), new BungeeListener());
     }
     

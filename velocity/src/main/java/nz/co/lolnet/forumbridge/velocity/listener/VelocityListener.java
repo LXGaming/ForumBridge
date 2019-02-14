@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 lolnet.co.nz
+ * Copyright 2019 lolnet.co.nz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package nz.co.lolnet.forumbridge.bungee;
+package nz.co.lolnet.forumbridge.velocity.listener;
 
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import nz.co.lolnet.forumbridge.common.manager.IntegrationManager;
+import nz.co.lolnet.forumbridge.velocity.VelocityPlugin;
 
-public class BungeeListener implements Listener {
+public class VelocityListener {
     
-    @EventHandler
+    @Subscribe
     public void onPostLogin(PostLoginEvent event) {
-        BungeePlugin.getInstance().getProxy().getScheduler().runAsync(BungeePlugin.getInstance(), () -> {
+        VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
             IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
-            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-        });
+            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
+        }).schedule();
     }
 }

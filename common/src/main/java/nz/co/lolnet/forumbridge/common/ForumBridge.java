@@ -39,10 +39,30 @@ public class ForumBridge {
     }
     
     public void loadForumBridge() {
-        getConfiguration().loadConfiguration();
-        IntegrationManager.buildNodes();
-        getConfiguration().saveConfiguration();
+        reloadForumBridge();
         getLogger().info("{} v{} loaded", Reference.NAME, Reference.VERSION);
+    }
+    
+    public boolean reloadForumBridge() {
+        getConfiguration().loadConfiguration();
+        if (!getConfig().isPresent()) {
+            return false;
+        }
+        
+        getConfiguration().saveConfiguration();
+        if (getConfig().map(Config::isDebug).orElse(false)) {
+            getLogger().debug("Debug mode enabled");
+        } else {
+            getLogger().info("Debug mode disabled");
+        }
+        
+        if (IntegrationManager.buildNodes()) {
+            getLogger().info("Successfully reloaded");
+            return true;
+        } else {
+            getLogger().error("Failed to reload");
+            return false;
+        }
     }
     
     public static ForumBridge getInstance() {

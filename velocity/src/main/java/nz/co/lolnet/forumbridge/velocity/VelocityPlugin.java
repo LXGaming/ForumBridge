@@ -28,6 +28,8 @@ import nz.co.lolnet.forumbridge.common.Platform;
 import nz.co.lolnet.forumbridge.common.configuration.Config;
 import nz.co.lolnet.forumbridge.common.util.Logger;
 import nz.co.lolnet.forumbridge.common.util.Reference;
+import nz.co.lolnet.forumbridge.velocity.command.ForumBridgeCommand;
+import nz.co.lolnet.forumbridge.velocity.listener.VelocityListener;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
@@ -68,6 +70,7 @@ public class VelocityPlugin implements Platform {
                 });
         
         forumBridge.loadForumBridge();
+        getProxy().getCommandManager().register(new ForumBridgeCommand(), "forumbridge");
         getProxy().getEventManager().register(getInstance(), new VelocityListener());
     }
     
