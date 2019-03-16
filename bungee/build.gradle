@@ -23,6 +23,10 @@ repositories {
         url = "https://api.lolnet.co.nz/maven"
     }
     maven {
+        name = "md-5"
+        url = "https://repo.md-5.net/content/groups/public"
+    }
+    maven {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/repositories/snapshots"
     }
@@ -31,6 +35,7 @@ repositories {
 dependencies {
     compile(project(path: ":common"))
     provided(project(path: ":common", configuration: "provided"))
+    provided("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
     provided("net.md-5:bungeecord-api:1.13-SNAPSHOT")
 }
 

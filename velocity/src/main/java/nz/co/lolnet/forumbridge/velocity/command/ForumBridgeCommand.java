@@ -21,7 +21,7 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
+import nz.co.lolnet.forumbridge.velocity.ForumBridgeImpl;
 import nz.co.lolnet.forumbridge.velocity.VelocityPlugin;
 import nz.co.lolnet.forumbridge.velocity.util.VelocityToolbox;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -34,7 +34,7 @@ public class ForumBridgeCommand implements Command {
     public void execute(@NonNull CommandSource source, String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload") && source.hasPermission("forumbridge.reload.base")) {
             VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
-                if (ForumBridge.getInstance().reloadForumBridge()) {
+                if (ForumBridgeImpl.getInstance().reloadForumBridge()) {
                     source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("Configuration reloaded", TextColor.GREEN)));
                 } else {
                     source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("An error occurred. Please check the console", TextColor.RED)));

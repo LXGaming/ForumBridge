@@ -16,14 +16,14 @@
 
 package nz.co.lolnet.forumbridge.common.manager;
 
+import com.google.common.collect.Maps;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import nz.co.lolnet.api.LolnetAPI;
 import nz.co.lolnet.api.data.IdentityData;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
-import nz.co.lolnet.forumbridge.common.configuration.Config;
-import nz.co.lolnet.forumbridge.common.util.Toolbox;
+import nz.co.lolnet.forumbridge.api.ForumBridge;
+import nz.co.lolnet.forumbridge.api.configuration.Config;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class IntegrationManager {
     
-    private static final Map<String, Node> NODES = Toolbox.newHashMap();
+    private static final Map<String, Node> NODES = Maps.newHashMap();
     
     public static boolean buildNodes() {
         Map<String, String> groups = ForumBridge.getInstance().getConfig().map(Config::getGroups).orElse(null);

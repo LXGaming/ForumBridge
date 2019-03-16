@@ -16,7 +16,10 @@
 
 package nz.co.lolnet.forumbridge.common.configuration;
 
-import nz.co.lolnet.forumbridge.common.ForumBridge;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import nz.co.lolnet.forumbridge.api.ForumBridge;
+import nz.co.lolnet.forumbridge.api.configuration.Config;
 import nz.co.lolnet.forumbridge.common.util.Toolbox;
 
 import java.io.Reader;
@@ -29,10 +32,21 @@ import java.util.Optional;
 
 public class Configuration {
     
-    private Config config;
+    private static final Gson GSON = new GsonBuilder()
+            .disableHtmlEscaping()
+            .enableComplexMapKeySerialization()
+            .setPrettyPrinting()
+            .create();
+    
+    private final Path path;
+    protected Config config;
+    
+    public Configuration(Path path) {
+        this.path = path;
+    }
     
     public boolean loadConfiguration() {
-        Optional<Config> config = loadFile(ForumBridge.getInstance().getPlatform().getPath().resolve("config.json"), Config.class);
+        Optional<Config> config = loadFile(getPath().resolve("config.json"), Config.class);
         if (config.isPresent()) {
             this.config = config.get();
             return true;
@@ -42,7 +56,7 @@ public class Configuration {
     }
     
     public boolean saveConfiguration() {
-        return saveFile(ForumBridge.getInstance().getPlatform().getPath().resolve("config.json"), config);
+        return saveFile(getPath().resolve("config.json"), config);
     }
     
     public static <T> Optional<T> loadFile(Path path, Class<T> typeOfT) {
@@ -63,7 +77,7 @@ public class Configuration {
     
     public static <T> Optional<T> deserializeFile(Path path, Class<T> typeOfT) {
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            return Optional.ofNullable(Toolbox.getGson().fromJson(reader, typeOfT));
+            return Optional.ofNullable(getGson().fromJson(reader, typeOfT));
         } catch (Exception ex) {
             ForumBridge.getInstance().getLogger().error("Encountered an error while deserializing {}", path, ex);
             return Optional.empty();
@@ -72,7 +86,7 @@ public class Configuration {
     
     public static boolean serializeFile(Path path, Object object) {
         try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
-            Toolbox.getGson().toJson(object, writer);
+            getGson().toJson(object, writer);
             return true;
         } catch (Exception ex) {
             ForumBridge.getInstance().getLogger().error("Encountered an error while serializing {}", path, ex);
@@ -92,6 +106,14 @@ public class Configuration {
             ForumBridge.getInstance().getLogger().error("Encountered an error while creating {}", path, ex);
             return false;
         }
+    }
+    
+    public static Gson getGson() {
+        return GSON;
+    }
+    
+    protected Path getPath() {
+        return path;
     }
     
     public Config getConfig() {

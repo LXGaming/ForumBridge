@@ -22,7 +22,7 @@ import net.kyori.text.event.ClickEvent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.format.TextColor;
 import net.kyori.text.format.TextDecoration;
-import nz.co.lolnet.forumbridge.common.util.Reference;
+import nz.co.lolnet.forumbridge.api.util.Reference;
 
 public class VelocityToolbox {
     

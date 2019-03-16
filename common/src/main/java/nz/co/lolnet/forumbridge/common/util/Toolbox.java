@@ -18,12 +18,10 @@ package nz.co.lolnet.forumbridge.common.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Toolbox {
     
@@ -33,21 +31,55 @@ public class Toolbox {
             .setPrettyPrinting()
             .create();
     
+    public static <T> Optional<T> parseJson(String json, Class<T> type) {
+        try {
+            return parseJson(new JsonParser().parse(json), type);
+        } catch (RuntimeException ex) {
+            return Optional.empty();
+        }
+    }
+    
+    public static <T> Optional<T> parseJson(JsonElement jsonElement, Class<T> type) {
+        try {
+            return Optional.of(new Gson().fromJson(jsonElement, type));
+        } catch (RuntimeException ex) {
+            return Optional.empty();
+        }
+    }
+    
+    public static boolean isBlank(CharSequence charSequence) {
+        int stringLength;
+        if (charSequence == null || (stringLength = charSequence.length()) == 0) {
+            return true;
+        }
+        
+        for (int index = 0; index < stringLength; index++) {
+            if (!Character.isWhitespace(charSequence.charAt(index))) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public static boolean isNotBlank(CharSequence charSequence) {
+        return !isBlank(charSequence);
+    }
+    
+    public static String getClassSimpleName(Class<?> clazz) {
+        if (clazz.getEnclosingClass() != null) {
+            return getClassSimpleName(clazz.getEnclosingClass()) + "." + clazz.getSimpleName();
+        }
+        
+        return clazz.getSimpleName();
+    }
+    
     public static <T> Optional<T> newInstance(Class<? extends T> typeOfT) {
         try {
             return Optional.of(typeOfT.newInstance());
         } catch (Exception ex) {
             return Optional.empty();
         }
-    }
-    
-    @SafeVarargs
-    public static <E> ArrayList<E> newArrayList(E... elements) {
-        return Stream.of(elements).collect(Collectors.toCollection(ArrayList::new));
-    }
-    
-    public static <K, V> HashMap<K, V> newHashMap() {
-        return new HashMap<>();
     }
     
     public static Gson getGson() {

@@ -19,17 +19,19 @@ package nz.co.lolnet.forumbridge.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
-import nz.co.lolnet.forumbridge.common.Platform;
-import nz.co.lolnet.forumbridge.common.configuration.Config;
-import nz.co.lolnet.forumbridge.common.util.Logger;
-import nz.co.lolnet.forumbridge.common.util.Reference;
+import nz.co.lolnet.forumbridge.api.ForumBridge;
+import nz.co.lolnet.forumbridge.api.configuration.Config;
+import nz.co.lolnet.forumbridge.api.util.Logger;
+import nz.co.lolnet.forumbridge.api.util.Reference;
 import nz.co.lolnet.forumbridge.velocity.command.ForumBridgeCommand;
+import nz.co.lolnet.forumbridge.velocity.listener.RedisListener;
 import nz.co.lolnet.forumbridge.velocity.listener.VelocityListener;
+import nz.co.lolnet.redisvelocity.api.RedisVelocity;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
@@ -41,9 +43,12 @@ import java.nio.file.Path;
         description = Reference.DESCRIPTION,
         url = Reference.WEBSITE,
         authors = {Reference.AUTHORS},
-        dependencies = {@Dependency(id = "luckperms")}
+        dependencies = {
+                @Dependency(id = "luckperms"),
+                @Dependency(id = "redisvelocity", optional = true)
+        }
 )
-public class VelocityPlugin implements Platform {
+public class VelocityPlugin {
     
     private static VelocityPlugin instance;
     
@@ -57,8 +62,7 @@ public class VelocityPlugin implements Platform {
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
         instance = this;
-        
-        ForumBridge forumBridge = new ForumBridge(this);
+        ForumBridgeImpl forumBridge = new ForumBridgeImpl();
         forumBridge.getLogger()
                 .add(Logger.Level.INFO, LoggerFactory.getLogger(Reference.NAME)::info)
                 .add(Logger.Level.WARN, LoggerFactory.getLogger(Reference.NAME)::warn)
@@ -70,8 +74,20 @@ public class VelocityPlugin implements Platform {
                 });
         
         forumBridge.loadForumBridge();
+        
         getProxy().getCommandManager().register(new ForumBridgeCommand(), "forumbridge");
         getProxy().getEventManager().register(getInstance(), new VelocityListener());
+        
+        if (getProxy().getPluginManager().isLoaded("redisvelocity")) {
+            ForumBridge.getInstance().getLogger().info("RedisVelocity detected");
+            getProxy().getEventManager().register(getInstance(), new RedisListener());
+            RedisVelocity.getInstance().registerChannels("forum");
+        }
+    }
+    
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        RedisVelocity.getInstance().unregisterChannels("forum");
     }
     
     public static VelocityPlugin getInstance() {
@@ -82,7 +98,6 @@ public class VelocityPlugin implements Platform {
         return proxy;
     }
     
-    @Override
     public Path getPath() {
         return path;
     }

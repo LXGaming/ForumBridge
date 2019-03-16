@@ -20,8 +20,8 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import nz.co.lolnet.forumbridge.bungee.BungeePlugin;
+import nz.co.lolnet.forumbridge.bungee.ForumBridgeImpl;
 import nz.co.lolnet.forumbridge.bungee.util.BungeeToolbox;
-import nz.co.lolnet.forumbridge.common.ForumBridge;
 
 public class ForumBridgeCommand extends Command {
     
@@ -33,7 +33,7 @@ public class ForumBridgeCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload") && sender.hasPermission("forumbridge.reload.base")) {
             BungeePlugin.getInstance().getProxy().getScheduler().runAsync(BungeePlugin.getInstance(), () -> {
-                if (ForumBridge.getInstance().reloadForumBridge()) {
+                if (ForumBridgeImpl.getInstance().reloadForumBridge()) {
                     sender.sendMessage(BungeeToolbox.getTextPrefix().append("Configuration reloaded").color(ChatColor.GREEN).create());
                 } else {
                     sender.sendMessage(BungeeToolbox.getTextPrefix().append("An error occurred. Please check the console").color(ChatColor.RED).create());

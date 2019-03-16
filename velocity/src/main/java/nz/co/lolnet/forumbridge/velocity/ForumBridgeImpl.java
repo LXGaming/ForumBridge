@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 lolnet.co.nz
+ * Copyright 2019 lolnet.co.nz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,42 @@
  * limitations under the License.
  */
 
-package nz.co.lolnet.forumbridge.common;
+package nz.co.lolnet.forumbridge.velocity;
 
-import nz.co.lolnet.forumbridge.common.configuration.Config;
-import nz.co.lolnet.forumbridge.common.configuration.Configuration;
+import nz.co.lolnet.forumbridge.api.ForumBridge;
+import nz.co.lolnet.forumbridge.api.configuration.Config;
+import nz.co.lolnet.forumbridge.api.network.NetworkHandler;
+import nz.co.lolnet.forumbridge.api.util.Reference;
 import nz.co.lolnet.forumbridge.common.manager.IntegrationManager;
-import nz.co.lolnet.forumbridge.common.util.Logger;
-import nz.co.lolnet.forumbridge.common.util.Reference;
+import nz.co.lolnet.forumbridge.common.manager.PacketManager;
+import nz.co.lolnet.forumbridge.common.util.LoggerImpl;
+import nz.co.lolnet.forumbridge.velocity.configuration.VelocityConfig;
+import nz.co.lolnet.forumbridge.velocity.configuration.VelocityConfiguration;
+import nz.co.lolnet.forumbridge.velocity.util.NetworkHandlerImpl;
 
 import java.util.Optional;
 
-public class ForumBridge {
+public class ForumBridgeImpl extends ForumBridge {
     
-    private static ForumBridge instance;
-    private final Platform platform;
-    private final Logger logger;
-    private final Configuration configuration;
+    private VelocityConfiguration configuration;
     
-    public ForumBridge(Platform platform) {
-        instance = this;
-        this.platform = platform;
-        this.logger = new Logger();
-        this.configuration = new Configuration();
+    ForumBridgeImpl() {
+        this.logger = new LoggerImpl();
+        this.configuration = new VelocityConfiguration(VelocityPlugin.getInstance().getPath());
     }
     
+    @Override
     public void loadForumBridge() {
+        getLogger().info("Initializing...");
         reloadForumBridge();
-        getLogger().info("{} v{} loaded", Reference.NAME, Reference.VERSION);
+        PacketManager.buildPackets();
+        registerNetworkHandler(NetworkHandlerImpl.class);
+        getLogger().info("{} v{} has loaded", Reference.NAME, Reference.VERSION);
     }
     
+    @Override
     public boolean reloadForumBridge() {
-        getConfiguration().loadConfiguration();
-        if (!getConfig().isPresent()) {
+        if (!getConfiguration().loadConfiguration()) {
             return false;
         }
         
@@ -65,23 +69,20 @@ public class ForumBridge {
         }
     }
     
-    public static ForumBridge getInstance() {
-        return instance;
+    @Override
+    public boolean registerNetworkHandler(Class<? extends NetworkHandler> networkHandlerClass) {
+        return false;
     }
     
-    public Platform getPlatform() {
-        return platform;
+    public static ForumBridgeImpl getInstance() {
+        return (ForumBridgeImpl) ForumBridge.getInstance();
     }
     
-    public Logger getLogger() {
-        return logger;
-    }
-    
-    public Configuration getConfiguration() {
+    public VelocityConfiguration getConfiguration() {
         return configuration;
     }
     
-    public Optional<Config> getConfig() {
+    public Optional<VelocityConfig> getConfig() {
         if (getConfiguration() != null) {
             return Optional.ofNullable(getConfiguration().getConfig());
         }

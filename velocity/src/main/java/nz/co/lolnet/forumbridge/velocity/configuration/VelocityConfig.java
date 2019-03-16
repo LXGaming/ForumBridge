@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 lolnet.co.nz
+ * Copyright 2019 lolnet.co.nz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package nz.co.lolnet.forumbridge.common;
+package nz.co.lolnet.forumbridge.velocity.configuration;
 
-import java.nio.file.Path;
+import com.google.common.collect.Maps;
+import nz.co.lolnet.forumbridge.api.configuration.Config;
 
-public interface Platform {
+import java.util.Map;
+
+public class VelocityConfig implements Config {
     
-    Path getPath();
+    private boolean debug = false;
+    private Map<String, String> groups = Maps.newHashMap();
+    
+    @Override
+    public boolean isDebug() {
+        return debug;
+    }
+    
+    @Override
+    public Map<String, String> getGroups() {
+        return groups;
+    }
 }

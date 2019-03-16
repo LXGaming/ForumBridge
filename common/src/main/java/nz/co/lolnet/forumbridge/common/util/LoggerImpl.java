@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 lolnet.co.nz
+ * Copyright 2019 lolnet.co.nz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package nz.co.lolnet.forumbridge.common.util;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import nz.co.lolnet.forumbridge.api.util.Logger;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -25,26 +29,31 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class Logger {
+public class LoggerImpl implements Logger {
     
-    private final Map<Level, Consumer<String>> consumers = Toolbox.newHashMap();
+    private final Map<Level, Consumer<String>> consumers = Maps.newHashMap();
     
+    @Override
     public void debug(String format, Object... arguments) {
         log(Level.DEBUG, format, arguments);
     }
     
+    @Override
     public void info(String format, Object... arguments) {
         log(Level.INFO, format, arguments);
     }
     
+    @Override
     public void warn(String format, Object... arguments) {
         log(Level.WARN, format, arguments);
     }
     
+    @Override
     public void error(String format, Object... arguments) {
         log(Level.ERROR, format, arguments);
     }
     
+    @Override
     public void log(Level level, String format, Object... arguments) {
         Optional<Consumer<String>> consumer = getConsumer(level);
         if (consumer.isPresent()) {
@@ -58,7 +67,8 @@ public class Logger {
         }
     }
     
-    public Logger add(Level level, Consumer<String> consumer) {
+    @Override
+    public LoggerImpl add(Level level, Consumer<String> consumer) {
         getConsumers().put(level, consumer);
         return this;
     }
@@ -67,7 +77,7 @@ public class Logger {
         int index = 0;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(format);
-        List<Throwable> throwables = Toolbox.newArrayList();
+        List<Throwable> throwables = Lists.newArrayList();
         for (Object object : arguments) {
             index = stringBuilder.indexOf("{}", index);
             if (index < 0 || index > stringBuilder.length()) {
@@ -115,27 +125,5 @@ public class Logger {
     
     private Map<Level, Consumer<String>> getConsumers() {
         return consumers;
-    }
-    
-    public enum Level {
-        
-        DEBUG("DEBUG"),
-        
-        INFO("INFO"),
-        
-        WARN("WARN"),
-        
-        ERROR("ERROR");
-        
-        private final String name;
-        
-        Level(String name) {
-            this.name = name;
-        }
-        
-        @Override
-        public String toString() {
-            return name;
-        }
     }
 }
