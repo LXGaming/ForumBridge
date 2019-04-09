@@ -87,7 +87,9 @@ public class VelocityPlugin {
     
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
-        RedisVelocity.getInstance().unregisterChannels("forum");
+        if (getProxy().getPluginManager().isLoaded("redisvelocity")) {
+            RedisVelocity.getInstance().unregisterChannels("forum");
+        }
     }
     
     public static VelocityPlugin getInstance() {

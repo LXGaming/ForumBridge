@@ -57,7 +57,9 @@ public class BungeePlugin extends Plugin {
     
     @Override
     public void onDisable() {
-        RedisBungee.getApi().registerPubSubChannels("forum");
+        if (getProxy().getPluginManager().getPlugin("RedisBungee") != null) {
+            RedisBungee.getApi().registerPubSubChannels("forum");
+        }
     }
     
     public static BungeePlugin getInstance() {
