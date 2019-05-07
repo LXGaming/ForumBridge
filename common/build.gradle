@@ -31,7 +31,7 @@ dependencies {
     api(project(path: ":api"))
     provided("com.google.guava:guava:27.0-jre")
     provided("me.lucko.luckperms:luckperms-api:4.3")
-    provided("nz.co.lolnet:lolnetapi-api:2.0.4")
+    provided("nz.co.lolnet:lolnetapi-api:2.0.6")
 }
 
 task javadocJar(type: Jar) {
