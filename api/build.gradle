@@ -6,7 +6,7 @@ apply plugin: "signing"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = "nz.co.lolnet"
+group = "net.creationreborn"
 archivesBaseName = "forumbridge-api"
 version = version
 
@@ -72,14 +72,14 @@ uploadArchives {
                         packaging = "jar"
 
                         scm {
-                            url = "https://github.com/lolnetnz/ForumBridge"
-                            connection = "scm:git:https://github.com/lolnetnz/ForumBridge.git"
-                            developerConnection = "scm:git:git@github.com:lolnetnz/ForumBridge.git"
+                            url = "https://github.com/creation-reborn/ForumBridge"
+                            connection = "scm:git:https://github.com/creation-reborn/ForumBridge.git"
+                            developerConnection = "scm:git:git@github.com:creation-reborn/ForumBridge.git"
                         }
 
                         issueManagement {
                             system = "GitHub Issues"
-                            url = "https://github.com/lolnetnz/ForumBridge/issues"
+                            url = "https://github.com/creation-reborn/ForumBridge/issues"
                         }
 
                         licenses {

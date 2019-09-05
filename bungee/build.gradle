@@ -4,7 +4,7 @@ apply plugin: "signing"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = "nz.co.lolnet"
+group = "net.creationreborn"
 archivesBaseName = "forumbridge-bungee"
 version = version
 
@@ -19,8 +19,8 @@ configurations {
 repositories {
     jcenter()
     maven {
-        name = "lolnet"
-        url = "https://repo.lolnet.co.nz/maven"
+        name = "creation-reborn"
+        url = "https://dl.bintray.com/creation-reborn/maven"
     }
     maven {
         name = "md-5"

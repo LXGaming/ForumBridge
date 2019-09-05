@@ -4,7 +4,7 @@ apply plugin: "signing"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = "nz.co.lolnet"
+group = "net.creationreborn"
 archivesBaseName = "forumbridge-velocity"
 version = version
 
@@ -19,8 +19,12 @@ configurations {
 repositories {
     jcenter()
     maven {
-        name = "lolnet"
-        url = "https://repo.lolnet.co.nz/maven"
+        name = "creation-reborn"
+        url = "https://dl.bintray.com/creation-reborn/maven"
+    }
+    maven {
+        name = "lxgaming"
+        url = "https://dl.bintray.com/lxgaming/maven"
     }
     maven {
         name = "velocity"
@@ -33,7 +37,7 @@ dependencies {
     provided(project(path: ":common", configuration: "provided"))
     annotationProcessor("com.velocitypowered:velocity-api:1.0.0-SNAPSHOT")
     provided("com.velocitypowered:velocity-api:1.0.0-SNAPSHOT")
-    provided("nz.co.lolnet:redisvelocity-plugin:1.1.1")
+    provided("io.github.lxgaming:redisvelocity-api:1.1.3")
 }
 
 jar {

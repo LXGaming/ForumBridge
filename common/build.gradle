@@ -6,7 +6,7 @@ apply plugin: "signing"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = "nz.co.lolnet"
+group = "net.creationreborn"
 archivesBaseName = "forumbridge-common"
 version = version
 
@@ -22,8 +22,8 @@ configurations {
 repositories {
     jcenter()
     maven {
-        name = "lolnet"
-        url = "https://repo.lolnet.co.nz/maven"
+        name = "creation-reborn"
+        url = "https://dl.bintray.com/creation-reborn/maven"
     }
 }
 
@@ -31,7 +31,7 @@ dependencies {
     api(project(path: ":api"))
     provided("com.google.guava:guava:27.0-jre")
     provided("me.lucko.luckperms:luckperms-api:4.3")
-    provided("nz.co.lolnet:lolnetapi-api:2.0.6")
+    provided("net.creationreborn:crapi:2.1.0")
 }
 
 task javadocJar(type: Jar) {
@@ -80,14 +80,14 @@ uploadArchives {
                         packaging = "jar"
                         
                         scm {
-                            url = "https://github.com/lolnetnz/ForumBridge"
-                            connection = "scm:git:https://github.com/lolnetnz/ForumBridge.git"
-                            developerConnection = "scm:git:git@github.com:lolnetnz/ForumBridge.git"
+                            url = "https://github.com/creation-reborn/ForumBridge"
+                            connection = "scm:git:https://github.com/creation-reborn/ForumBridge.git"
+                            developerConnection = "scm:git:git@github.com:creation-reborn/ForumBridge.git"
                         }
                         
                         issueManagement {
                             system = "GitHub Issues"
-                            url = "https://github.com/lolnetnz/ForumBridge/issues"
+                            url = "https://github.com/creation-reborn/ForumBridge/issues"
                         }
                         
                         licenses {
