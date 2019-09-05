@@ -5,3 +5,4 @@ description: Forum Bridge
 author: LX_Gaming
 website: https://creationreborn.net/
 depends: [LuckPerms]
+softDepends: [RedisBungee]
