@@ -24,6 +24,7 @@ import net.creationreborn.api.CRAPI;
 import net.creationreborn.api.data.IdentityData;
 import net.creationreborn.forumbridge.api.ForumBridge;
 import net.creationreborn.forumbridge.api.configuration.Config;
+import net.creationreborn.forumbridge.common.util.Toolbox;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,18 +33,22 @@ import java.util.concurrent.TimeUnit;
 
 public final class IntegrationManager {
     
-    private static final Map<String, Node> NODES = Maps.newHashMap();
+    private static final Map<String, String> GROUPS = Maps.newLinkedHashMap();
+    private static final Map<String, Node> NODES = Maps.newLinkedHashMap();
     
-    public static boolean buildNodes() {
+    public static boolean prepare() {
         Map<String, String> groups = ForumBridge.getInstance().getConfig().map(Config::getGroups).orElse(null);
         if (groups == null) {
             ForumBridge.getInstance().getLogger().error("Failed to get groups from config");
             return false;
         }
         
+        GROUPS.clear();
         NODES.clear();
-        groups.putIfAbsent("Default", "default");
-        for (Map.Entry<String, String> entry : groups.entrySet()) {
+        
+        GROUPS.putAll(groups);
+        GROUPS.putIfAbsent("Default", "default");
+        for (Map.Entry<String, String> entry : GROUPS.entrySet()) {
             LuckPerms.getApiSafe()
                     .map(api -> api.buildNode("group." + entry.getValue()).build())
                     .ifPresent(node -> NODES.put(entry.getKey(), node));
@@ -54,7 +59,7 @@ public final class IntegrationManager {
     
     public static boolean updateGroups(UUID uniqueId) {
         try {
-            if (NODES.isEmpty()) {
+            if (GROUPS.isEmpty() || NODES.isEmpty()) {
                 return false;
             }
             
@@ -66,12 +71,19 @@ public final class IntegrationManager {
             IdentityData identity = CRAPI.getInstance().getForumEndpoint().getIdentity(uniqueId).sync();
             Collection<String> groups = CRAPI.getInstance().getForumEndpoint().getGroups(identity.getUserId()).sync();
             
-            ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId.toString());
+            ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
             
+            boolean primaryGroup = false;
             for (Map.Entry<String, Node> entry : NODES.entrySet()) {
                 if (groups.contains(entry.getKey())) {
                     if (!user.hasPermission(entry.getValue()).asBoolean()) {
                         user.setPermission(entry.getValue());
+                    }
+                    
+                    String group = GROUPS.get(entry.getKey());
+                    if (!primaryGroup && Toolbox.isNotBlank(group) && user.setPrimaryGroup(group).asBoolean()) {
+                        primaryGroup = true;
+                        ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {}", group, uniqueId);
                     }
                     
                     continue;
@@ -80,11 +92,19 @@ public final class IntegrationManager {
                 user.unsetPermission(entry.getValue());
             }
             
+            if (!primaryGroup) {
+                if (user.setPrimaryGroup("default").asBoolean()) {
+                    ForumBridge.getInstance().getLogger().debug("Set default as primary group for {}", uniqueId);
+                } else {
+                    ForumBridge.getInstance().getLogger().warn("Failed to set primary group for {}", uniqueId);
+                }
+            }
+            
             LuckPerms.getApi().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
-            ForumBridge.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId.toString());
+            ForumBridge.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId);
             return true;
         } catch (Exception ex) {
-            ForumBridge.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId.toString(), ex.getMessage());
+            ForumBridge.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId, ex.getMessage());
             return false;
         }
     }

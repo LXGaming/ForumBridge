@@ -24,7 +24,7 @@ import java.util.Map;
 public class VelocityConfig implements Config {
     
     private boolean debug = false;
-    private Map<String, String> groups = Maps.newHashMap();
+    private Map<String, String> groups = Maps.newLinkedHashMap();
     
     @Override
     public boolean isDebug() {

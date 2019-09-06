@@ -60,7 +60,7 @@ public class ForumBridgeImpl extends ForumBridge {
             getLogger().info("Debug mode disabled");
         }
         
-        if (IntegrationManager.buildNodes()) {
+        if (IntegrationManager.prepare()) {
             getLogger().info("Successfully reloaded");
             return true;
         } else {
