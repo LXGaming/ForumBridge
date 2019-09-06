@@ -33,7 +33,12 @@ repositories {
 }
 
 dependencies {
-    compile(project(path: ":common"))
+    compile(project(path: ":common")) {
+        exclude(module: "crapi")
+        exclude(module: "gson")
+        exclude(module: "guava")
+        exclude(module: "luckperms-api")
+    }
     provided(project(path: ":common", configuration: "provided"))
     annotationProcessor("com.velocitypowered:velocity-api:1.0.0-SNAPSHOT")
     provided("com.velocitypowered:velocity-api:1.0.0-SNAPSHOT")

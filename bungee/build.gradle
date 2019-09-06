@@ -33,7 +33,12 @@ repositories {
 }
 
 dependencies {
-    compile(project(path: ":common"))
+    compile(project(path: ":common")) {
+        exclude(module: "crapi")
+        exclude(module: "gson")
+        exclude(module: "guava")
+        exclude(module: "luckperms-api")
+    }
     provided(project(path: ":common", configuration: "provided"))
     provided("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
     provided("net.md-5:bungeecord-api:1.14-SNAPSHOT")
