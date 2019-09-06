@@ -71,7 +71,7 @@ public class ForumBridgeImpl extends ForumBridge {
     
     @Override
     public boolean registerNetworkHandler(Class<? extends NetworkHandler> networkHandlerClass) {
-        return false;
+        return PacketManager.registerNetworkHandler(networkHandlerClass);
     }
     
     public static ForumBridgeImpl getInstance() {
