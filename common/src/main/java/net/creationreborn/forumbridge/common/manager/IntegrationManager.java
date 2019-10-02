@@ -18,6 +18,7 @@ package net.creationreborn.forumbridge.common.manager;
 
 import com.google.common.collect.Maps;
 import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.DataMutateResult;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import net.creationreborn.api.CRAPI;
@@ -81,9 +82,16 @@ public final class IntegrationManager {
                     }
                     
                     String group = GROUPS.get(entry.getKey());
-                    if (!primaryGroup && Toolbox.isNotBlank(group) && user.setPrimaryGroup(group).asBoolean()) {
-                        primaryGroup = true;
-                        ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {}", group, uniqueId);
+                    if (!primaryGroup && Toolbox.isNotBlank(group)) {
+                        DataMutateResult result = user.setPrimaryGroup(group);
+                        if (result == DataMutateResult.SUCCESS) {
+                            primaryGroup = true;
+                            ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {}", group, uniqueId);
+                        } else if (result == DataMutateResult.ALREADY_HAS) {
+                            primaryGroup = true;
+                        } else {
+                            ForumBridge.getInstance().getLogger().warn("Failed to set primary group to {} for {}", group, uniqueId);
+                        }
                     }
                     
                     continue;
