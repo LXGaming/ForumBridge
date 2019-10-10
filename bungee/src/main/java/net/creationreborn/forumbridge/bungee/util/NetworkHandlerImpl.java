@@ -48,7 +48,7 @@ public class NetworkHandlerImpl implements NetworkHandler {
             return;
         }
         
+        IntegrationManager.updateUser(player.getUniqueId(), player.getName());
         IntegrationManager.updateGroups(player.getUniqueId());
-        IntegrationManager.updateUsername(player.getUniqueId(), player.getName());
     }
 }

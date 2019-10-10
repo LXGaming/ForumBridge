@@ -117,9 +117,9 @@ public final class IntegrationManager {
         }
     }
     
-    public static boolean updateUsername(UUID uniqueId, String username) {
+    public static boolean updateUser(UUID uniqueId, String username) {
         try {
-            if (CRAPI.getInstance().getForumEndpoint().updateMinecraftUsername(uniqueId, username).sync()) {
+            if (CRAPI.getInstance().getForumEndpoint().updateMinecraftUser(uniqueId, username).sync()) {
                 ForumBridge.getInstance().getLogger().debug("Successfully updated username for {}", uniqueId.toString());
                 return true;
             }

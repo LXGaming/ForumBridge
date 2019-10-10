@@ -26,8 +26,8 @@ public class VelocityListener {
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
         VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
+            IntegrationManager.updateUser(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
             IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
-            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
         }).schedule();
     }
 }

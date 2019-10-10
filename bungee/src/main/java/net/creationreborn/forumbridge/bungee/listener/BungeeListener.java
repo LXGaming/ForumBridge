@@ -27,8 +27,8 @@ public class BungeeListener implements Listener {
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
         BungeePlugin.getInstance().getProxy().getScheduler().runAsync(BungeePlugin.getInstance(), () -> {
+            IntegrationManager.updateUser(event.getPlayer().getUniqueId(), event.getPlayer().getName());
             IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
-            IntegrationManager.updateUsername(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         });
     }
 }
