@@ -41,7 +41,7 @@ public class PaymentPacket implements Packet {
     }
     
     public String getItem() {
-        return username;
+        return item;
     }
     
     public String getCost() {
