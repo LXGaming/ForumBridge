@@ -17,10 +17,13 @@
 package net.creationreborn.forumbridge.api.configuration;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface Config {
     
     boolean isDebug();
     
     Map<String, String> getGroups();
+    
+    Set<String> getIgnoredGroups();
 }

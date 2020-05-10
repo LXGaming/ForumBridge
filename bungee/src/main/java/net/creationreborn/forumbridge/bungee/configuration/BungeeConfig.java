@@ -17,14 +17,17 @@
 package net.creationreborn.forumbridge.bungee.configuration;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.creationreborn.forumbridge.api.configuration.Config;
 
 import java.util.Map;
+import java.util.Set;
 
 public class BungeeConfig implements Config {
     
     private boolean debug = false;
     private Map<String, String> groups = Maps.newLinkedHashMap();
+    private Set<String> ignoredGroups = Sets.newHashSet();
     
     @Override
     public boolean isDebug() {
@@ -34,5 +37,10 @@ public class BungeeConfig implements Config {
     @Override
     public Map<String, String> getGroups() {
         return groups;
+    }
+    
+    @Override
+    public Set<String> getIgnoredGroups() {
+        return ignoredGroups;
     }
 }

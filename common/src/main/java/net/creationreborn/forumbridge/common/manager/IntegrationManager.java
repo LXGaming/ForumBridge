@@ -17,6 +17,7 @@
 package net.creationreborn.forumbridge.common.manager;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.DataMutateResult;
 import me.lucko.luckperms.api.Node;
@@ -29,12 +30,14 @@ import net.creationreborn.forumbridge.common.util.Toolbox;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public final class IntegrationManager {
     
     private static final Map<String, String> GROUPS = Maps.newLinkedHashMap();
+    private static final Set<String> IGNORED_GROUPS = Sets.newHashSet();
     private static final Map<String, Node> NODES = Maps.newLinkedHashMap();
     
     public static boolean prepare() {
@@ -44,11 +47,19 @@ public final class IntegrationManager {
             return false;
         }
         
+        Set<String> ignoredGroups = ForumBridge.getInstance().getConfig().map(Config::getIgnoredGroups).orElse(null);
+        if (ignoredGroups == null) {
+            ForumBridge.getInstance().getLogger().error("Failed to get ignoredGroups from config");
+            return false;
+        }
+        
         GROUPS.clear();
+        IGNORED_GROUPS.clear();
         NODES.clear();
         
         GROUPS.putAll(groups);
         GROUPS.putIfAbsent("Default", "default");
+        IGNORED_GROUPS.addAll(ignoredGroups);
         for (Map.Entry<String, String> entry : GROUPS.entrySet()) {
             LuckPerms.getApiSafe()
                     .map(api -> api.buildNode("group." + entry.getValue()).build())
@@ -74,7 +85,7 @@ public final class IntegrationManager {
             
             ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
             
-            boolean primaryGroup = false;
+            boolean primaryGroup = IGNORED_GROUPS.contains(user.getPrimaryGroup());
             for (Map.Entry<String, Node> entry : NODES.entrySet()) {
                 if (groups.contains(entry.getKey())) {
                     if (!user.hasPermission(entry.getValue()).asBoolean()) {
