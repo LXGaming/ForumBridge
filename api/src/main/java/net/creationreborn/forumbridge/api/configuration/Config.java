@@ -25,5 +25,5 @@ public interface Config {
     
     Map<String, String> getGroups();
     
-    Set<String> getIgnoredGroups();
+    Set<String> getExternalGroups();
 }

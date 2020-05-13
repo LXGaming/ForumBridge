@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public final class IntegrationManager {
     
     private static final Map<String, String> GROUPS = Maps.newLinkedHashMap();
-    private static final Set<String> IGNORED_GROUPS = Sets.newHashSet();
+    private static final Set<String> EXTERNAL_GROUPS = Sets.newHashSet();
     private static final Map<String, Node> NODES = Maps.newLinkedHashMap();
     
     public static boolean prepare() {
@@ -47,20 +47,23 @@ public final class IntegrationManager {
             return false;
         }
         
-        Set<String> ignoredGroups = ForumBridge.getInstance().getConfig().map(Config::getIgnoredGroups).orElse(null);
-        if (ignoredGroups == null) {
-            ForumBridge.getInstance().getLogger().error("Failed to get ignoredGroups from config");
+        Set<String> externalGroups = ForumBridge.getInstance().getConfig().map(Config::getExternalGroups).orElse(null);
+        if (externalGroups == null) {
+            ForumBridge.getInstance().getLogger().error("Failed to get external groups from config");
             return false;
         }
         
         GROUPS.clear();
-        IGNORED_GROUPS.clear();
+        EXTERNAL_GROUPS.clear();
         NODES.clear();
         
         GROUPS.putAll(groups);
         GROUPS.putIfAbsent("Default", "default");
-        IGNORED_GROUPS.addAll(ignoredGroups);
         for (Map.Entry<String, String> entry : GROUPS.entrySet()) {
+            if (externalGroups.contains(entry.getKey())) {
+                EXTERNAL_GROUPS.add(entry.getKey());
+            }
+            
             LuckPerms.getApiSafe()
                     .map(api -> api.buildNode("group." + entry.getValue()).build())
                     .ifPresent(node -> NODES.put(entry.getKey(), node));
@@ -85,24 +88,29 @@ public final class IntegrationManager {
             
             ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
             
-            boolean primaryGroup = IGNORED_GROUPS.contains(user.getPrimaryGroup());
+            boolean primaryGroup = false;
             for (Map.Entry<String, Node> entry : NODES.entrySet()) {
+                if (EXTERNAL_GROUPS.contains(entry.getKey())) {
+                    if (!user.hasPermission(entry.getValue()).asBoolean()) {
+                        continue;
+                    }
+                    
+                    if (!primaryGroup) {
+                        String group = GROUPS.get(entry.getKey());
+                        primaryGroup = setPrimaryGroup(user, group);
+                    }
+                    
+                    continue;
+                }
+                
                 if (groups.contains(entry.getKey())) {
                     if (!user.hasPermission(entry.getValue()).asBoolean()) {
                         user.setPermission(entry.getValue());
                     }
                     
-                    String group = GROUPS.get(entry.getKey());
-                    if (!primaryGroup && Toolbox.isNotBlank(group)) {
-                        DataMutateResult result = user.setPrimaryGroup(group);
-                        if (result == DataMutateResult.SUCCESS) {
-                            primaryGroup = true;
-                            ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {}", group, uniqueId);
-                        } else if (result == DataMutateResult.ALREADY_HAS) {
-                            primaryGroup = true;
-                        } else {
-                            ForumBridge.getInstance().getLogger().warn("Failed to set primary group to {} for {}", group, uniqueId);
-                        }
+                    if (!primaryGroup) {
+                        String group = GROUPS.get(entry.getKey());
+                        primaryGroup = setPrimaryGroup(user, group);
                     }
                     
                     continue;
@@ -112,7 +120,7 @@ public final class IntegrationManager {
             }
             
             if (!primaryGroup) {
-                if (user.setPrimaryGroup("default").asBoolean()) {
+                if (setPrimaryGroup(user, "default")) {
                     ForumBridge.getInstance().getLogger().debug("Set default as primary group for {}", uniqueId);
                 } else {
                     ForumBridge.getInstance().getLogger().warn("Failed to set primary group for {}", uniqueId);
@@ -138,6 +146,23 @@ public final class IntegrationManager {
             return false;
         } catch (Exception ex) {
             ForumBridge.getInstance().getLogger().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
+            return false;
+        }
+    }
+    
+    private static boolean setPrimaryGroup(User user, String group) {
+        if (user == null || Toolbox.isBlank(group)) {
+            return false;
+        }
+        
+        DataMutateResult result = user.setPrimaryGroup(group);
+        if (result == DataMutateResult.SUCCESS) {
+            ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getName(), user.getUuid());
+            return true;
+        } else if (result == DataMutateResult.ALREADY_HAS) {
+            return true;
+        } else {
+            ForumBridge.getInstance().getLogger().warn("Failed to set primary group to {} for {} ({})", group, user.getName(), user.getUuid());
             return false;
         }
     }

@@ -27,7 +27,7 @@ public class VelocityConfig implements Config {
     
     private boolean debug = false;
     private Map<String, String> groups = Maps.newLinkedHashMap();
-    private Set<String> ignoredGroups = Sets.newHashSet();
+    private Set<String> externalGroups = Sets.newHashSet();
     
     @Override
     public boolean isDebug() {
@@ -40,7 +40,7 @@ public class VelocityConfig implements Config {
     }
     
     @Override
-    public Set<String> getIgnoredGroups() {
-        return ignoredGroups;
+    public Set<String> getExternalGroups() {
+        return externalGroups;
     }
 }
