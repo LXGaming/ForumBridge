@@ -13,6 +13,10 @@ archivesBaseName = "forumbridge-common"
 version = version
 
 configurations {
+    provided {
+        compile.extendsFrom(provided)
+    }
+
     compileJava.dependsOn(":api:build")
 }
 
