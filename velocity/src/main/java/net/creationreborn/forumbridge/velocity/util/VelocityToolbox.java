@@ -16,7 +16,7 @@
 
 package net.creationreborn.forumbridge.velocity.util;
 
-import net.creationreborn.forumbridge.api.util.Reference;
+import net.creationreborn.forumbridge.api.ForumBridge;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.ClickEvent;
 import net.kyori.text.event.HoverEvent;
@@ -28,17 +28,17 @@ public class VelocityToolbox {
     public static TextComponent getTextPrefix() {
         TextComponent.Builder textBuilder = TextComponent.builder();
         textBuilder.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, getPluginInformation()));
-        textBuilder.content("[" + Reference.NAME + "]").color(TextColor.BLUE).decoration(TextDecoration.BOLD, true);
+        textBuilder.content("[" + ForumBridge.NAME + "]").color(TextColor.BLUE).decoration(TextDecoration.BOLD, true);
         return TextComponent.of("").append(textBuilder.build()).append(TextComponent.of(" "));
     }
     
     public static TextComponent getPluginInformation() {
         TextComponent.Builder textBuilder = TextComponent.builder("");
-        textBuilder.append(TextComponent.of(Reference.NAME, TextColor.BLUE).decoration(TextDecoration.BOLD, true)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Version: ", TextColor.DARK_GRAY)).append(TextComponent.of(Reference.VERSION, TextColor.WHITE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Authors: ", TextColor.DARK_GRAY)).append(TextComponent.of(Reference.AUTHORS, TextColor.WHITE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Source: ", TextColor.DARK_GRAY)).append(getURLTextAction(Reference.SOURCE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Website: ", TextColor.DARK_GRAY)).append(getURLTextAction(Reference.WEBSITE));
+        textBuilder.append(TextComponent.of(ForumBridge.NAME, TextColor.BLUE).decoration(TextDecoration.BOLD, true)).append(TextComponent.newline());
+        textBuilder.append(TextComponent.of("    Version: ", TextColor.DARK_GRAY)).append(TextComponent.of(ForumBridge.VERSION, TextColor.WHITE)).append(TextComponent.newline());
+        textBuilder.append(TextComponent.of("    Authors: ", TextColor.DARK_GRAY)).append(TextComponent.of(ForumBridge.AUTHORS, TextColor.WHITE)).append(TextComponent.newline());
+        textBuilder.append(TextComponent.of("    Source: ", TextColor.DARK_GRAY)).append(getURLTextAction(ForumBridge.SOURCE)).append(TextComponent.newline());
+        textBuilder.append(TextComponent.of("    Website: ", TextColor.DARK_GRAY)).append(getURLTextAction(ForumBridge.WEBSITE));
         return textBuilder.build();
     }
     

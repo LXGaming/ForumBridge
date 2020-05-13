@@ -19,7 +19,6 @@ package net.creationreborn.forumbridge.velocity;
 import net.creationreborn.forumbridge.api.ForumBridge;
 import net.creationreborn.forumbridge.api.configuration.Config;
 import net.creationreborn.forumbridge.api.network.NetworkHandler;
-import net.creationreborn.forumbridge.api.util.Reference;
 import net.creationreborn.forumbridge.common.manager.IntegrationManager;
 import net.creationreborn.forumbridge.common.manager.PacketManager;
 import net.creationreborn.forumbridge.common.util.LoggerImpl;
@@ -44,7 +43,7 @@ public class ForumBridgeImpl extends ForumBridge {
         reloadForumBridge();
         PacketManager.buildPackets();
         registerNetworkHandler(NetworkHandlerImpl.class);
-        getLogger().info("{} v{} has loaded", Reference.NAME, Reference.VERSION);
+        getLogger().info("{} v{} has loaded", ForumBridge.NAME, ForumBridge.VERSION);
     }
     
     @Override

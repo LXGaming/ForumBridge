@@ -28,7 +28,6 @@ import io.github.lxgaming.redisvelocity.api.RedisVelocity;
 import net.creationreborn.forumbridge.api.ForumBridge;
 import net.creationreborn.forumbridge.api.configuration.Config;
 import net.creationreborn.forumbridge.api.util.Logger;
-import net.creationreborn.forumbridge.api.util.Reference;
 import net.creationreborn.forumbridge.velocity.command.ForumBridgeCommand;
 import net.creationreborn.forumbridge.velocity.listener.RedisListener;
 import net.creationreborn.forumbridge.velocity.listener.VelocityListener;
@@ -37,12 +36,12 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 
 @Plugin(
-        id = Reference.ID,
-        name = Reference.NAME,
-        version = Reference.VERSION,
-        description = Reference.DESCRIPTION,
-        url = Reference.WEBSITE,
-        authors = {Reference.AUTHORS},
+        id = ForumBridge.ID,
+        name = ForumBridge.NAME,
+        version = ForumBridge.VERSION,
+        description = ForumBridge.DESCRIPTION,
+        url = ForumBridge.WEBSITE,
+        authors = {ForumBridge.AUTHORS},
         dependencies = {
                 @Dependency(id = "luckperms"),
                 @Dependency(id = "redisvelocity", optional = true)
@@ -64,12 +63,12 @@ public class VelocityPlugin {
         instance = this;
         ForumBridgeImpl forumBridge = new ForumBridgeImpl();
         forumBridge.getLogger()
-                .add(Logger.Level.INFO, LoggerFactory.getLogger(Reference.NAME)::info)
-                .add(Logger.Level.WARN, LoggerFactory.getLogger(Reference.NAME)::warn)
-                .add(Logger.Level.ERROR, LoggerFactory.getLogger(Reference.NAME)::error)
+                .add(Logger.Level.INFO, LoggerFactory.getLogger(ForumBridge.NAME)::info)
+                .add(Logger.Level.WARN, LoggerFactory.getLogger(ForumBridge.NAME)::warn)
+                .add(Logger.Level.ERROR, LoggerFactory.getLogger(ForumBridge.NAME)::error)
                 .add(Logger.Level.DEBUG, message -> {
                     if (ForumBridge.getInstance().getConfig().map(Config::isDebug).orElse(false)) {
-                        LoggerFactory.getLogger(Reference.NAME).info(message);
+                        LoggerFactory.getLogger(ForumBridge.NAME).info(message);
                     }
                 });
         

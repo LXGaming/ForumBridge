@@ -19,7 +19,6 @@ package net.creationreborn.forumbridge.bungee;
 import net.creationreborn.forumbridge.api.ForumBridge;
 import net.creationreborn.forumbridge.api.configuration.Config;
 import net.creationreborn.forumbridge.api.network.NetworkHandler;
-import net.creationreborn.forumbridge.api.util.Reference;
 import net.creationreborn.forumbridge.bungee.configuration.BungeeConfig;
 import net.creationreborn.forumbridge.bungee.configuration.BungeeConfiguration;
 import net.creationreborn.forumbridge.bungee.util.NetworkHandlerImpl;
@@ -44,7 +43,7 @@ public class ForumBridgeImpl extends ForumBridge {
         reloadForumBridge();
         PacketManager.buildPackets();
         registerNetworkHandler(NetworkHandlerImpl.class);
-        getLogger().info("{} v{} has loaded", Reference.NAME, Reference.VERSION);
+        getLogger().info("{} v{} has loaded", ForumBridge.NAME, ForumBridge.VERSION);
     }
     
     @Override

@@ -24,6 +24,14 @@ import java.util.Optional;
 
 public abstract class ForumBridge {
     
+    public static final String ID = "forumbridge";
+    public static final String NAME = "ForumBridge";
+    public static final String VERSION = "${version}";
+    public static final String DESCRIPTION = "Forum Bridge";
+    public static final String AUTHORS = "LX_Gaming";
+    public static final String SOURCE = "https://github.com/creation-reborn/ForumBridge";
+    public static final String WEBSITE = "https://creationreborn.net/";
+    
     private static ForumBridge instance;
     protected Logger logger;
     
