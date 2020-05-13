@@ -56,11 +56,11 @@ public class PacketManager {
         
         Packet packet = Toolbox.parseJson(jsonObject.get("data"), packetClass).orElse(null);
         if (packet == null) {
-            ForumBridge.getInstance().getLogger().warn("Failed to deserialize packet {}: {}", packetClass.getName(), Toolbox.getGson().toJson(jsonObject));
+            ForumBridge.getInstance().getLogger().warn("Failed to deserialize packet {}: {}", packetClass.getName(), Toolbox.GSON.toJson(jsonObject));
             return;
         }
         
-        ForumBridge.getInstance().getLogger().debug("Processing {} ({}): {}", Toolbox.getClassSimpleName(packetClass), packetId, Toolbox.getGson().toJson(packet));
+        ForumBridge.getInstance().getLogger().debug("Processing {} ({}): {}", Toolbox.getClassSimpleName(packetClass), packetId, Toolbox.GSON.toJson(packet));
         for (NetworkHandler networkHandler : NETWORK_HANDLERS) {
             try {
                 if (networkHandler.handle(packet)) {

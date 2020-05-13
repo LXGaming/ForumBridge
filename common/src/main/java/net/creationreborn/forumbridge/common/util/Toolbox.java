@@ -19,13 +19,12 @@ package net.creationreborn.forumbridge.common.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import java.util.Optional;
 
 public class Toolbox {
     
-    private static final Gson GSON = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
             .enableComplexMapKeySerialization()
             .setPrettyPrinting()
@@ -33,7 +32,7 @@ public class Toolbox {
     
     public static <T> Optional<T> parseJson(String json, Class<T> type) {
         try {
-            return parseJson(new JsonParser().parse(json), type);
+            return Optional.of(GSON.fromJson(json, type));
         } catch (RuntimeException ex) {
             return Optional.empty();
         }
@@ -41,7 +40,7 @@ public class Toolbox {
     
     public static <T> Optional<T> parseJson(JsonElement jsonElement, Class<T> type) {
         try {
-            return Optional.of(new Gson().fromJson(jsonElement, type));
+            return Optional.of(GSON.fromJson(jsonElement, type));
         } catch (RuntimeException ex) {
             return Optional.empty();
         }
@@ -80,9 +79,5 @@ public class Toolbox {
         } catch (Exception ex) {
             return Optional.empty();
         }
-    }
-    
-    public static Gson getGson() {
-        return GSON;
     }
 }

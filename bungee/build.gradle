@@ -41,7 +41,7 @@ dependencies {
     }
     provided(project(path: ":common", configuration: "provided"))
     provided("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
-    provided("net.md-5:bungeecord-api:1.14-SNAPSHOT")
+    provided("net.md-5:bungeecord-api:1.15-SNAPSHOT")
 }
 
 jar {
@@ -55,9 +55,6 @@ jar {
 }
 
 processResources {
-    from("LICENSE")
-    rename("LICENSE", "LICENSE-" + archivesBaseName)
-
     from (sourceSets.main.resources.srcDirs) {
         include("bungee.yml")
         expand("name": "ForumBridge", "version": version)

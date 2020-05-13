@@ -74,7 +74,7 @@ public class VelocityPlugin {
         
         forumBridge.loadForumBridge();
         
-        getProxy().getCommandManager().register(new ForumBridgeCommand(), "forumbridge");
+        getProxy().getCommandManager().register("forumbridge", new ForumBridgeCommand());
         getProxy().getEventManager().register(getInstance(), new VelocityListener());
         
         if (getProxy().getPluginManager().isLoaded("redisvelocity")) {
