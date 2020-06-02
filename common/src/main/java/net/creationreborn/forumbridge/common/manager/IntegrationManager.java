@@ -18,15 +18,16 @@ package net.creationreborn.forumbridge.common.manager;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.DataMutateResult;
-import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.User;
 import net.creationreborn.api.CRAPI;
 import net.creationreborn.api.data.IdentityData;
 import net.creationreborn.forumbridge.api.ForumBridge;
 import net.creationreborn.forumbridge.api.configuration.Config;
 import net.creationreborn.forumbridge.common.util.Toolbox;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.data.DataMutateResult;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.NodeEqualityPredicate;
+import net.luckperms.api.node.types.InheritanceNode;
 
 import java.util.Collection;
 import java.util.Map;
@@ -38,7 +39,7 @@ public final class IntegrationManager {
     
     private static final Map<String, String> GROUPS = Maps.newLinkedHashMap();
     private static final Set<String> EXTERNAL_GROUPS = Sets.newHashSet();
-    private static final Map<String, Node> NODES = Maps.newLinkedHashMap();
+    private static final Map<String, InheritanceNode> NODES = Maps.newLinkedHashMap();
     
     public static boolean prepare() {
         Map<String, String> groups = ForumBridge.getInstance().getConfig().map(Config::getGroups).orElse(null);
@@ -64,9 +65,7 @@ public final class IntegrationManager {
                 EXTERNAL_GROUPS.add(entry.getKey());
             }
             
-            LuckPerms.getApiSafe()
-                    .map(api -> api.buildNode("group." + entry.getValue()).build())
-                    .ifPresent(node -> NODES.put(entry.getKey(), node));
+            NODES.put(entry.getKey(), InheritanceNode.builder().group(entry.getValue()).build());
         }
         
         return true;
@@ -78,7 +77,7 @@ public final class IntegrationManager {
                 return false;
             }
             
-            User user = LuckPerms.getApi().getUserManager().loadUser(uniqueId).get(30000L, TimeUnit.MILLISECONDS);
+            User user = LuckPermsProvider.get().getUserManager().loadUser(uniqueId).get(30000L, TimeUnit.MILLISECONDS);
             if (user == null) {
                 return false;
             }
@@ -89,9 +88,9 @@ public final class IntegrationManager {
             ForumBridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
             
             boolean primaryGroup = false;
-            for (Map.Entry<String, Node> entry : NODES.entrySet()) {
+            for (Map.Entry<String, InheritanceNode> entry : NODES.entrySet()) {
                 if (EXTERNAL_GROUPS.contains(entry.getKey())) {
-                    if (!user.hasPermission(entry.getValue()).asBoolean()) {
+                    if (!user.data().contains(entry.getValue(), NodeEqualityPredicate.EXACT).asBoolean()) {
                         continue;
                     }
                     
@@ -104,8 +103,8 @@ public final class IntegrationManager {
                 }
                 
                 if (groups.contains(entry.getKey())) {
-                    if (!user.hasPermission(entry.getValue()).asBoolean()) {
-                        user.setPermission(entry.getValue());
+                    if (!user.data().contains(entry.getValue(), NodeEqualityPredicate.EXACT).asBoolean()) {
+                        user.data().add(entry.getValue());
                     }
                     
                     if (!primaryGroup) {
@@ -116,7 +115,7 @@ public final class IntegrationManager {
                     continue;
                 }
                 
-                user.unsetPermission(entry.getValue());
+                user.data().remove(entry.getValue());
             }
             
             if (!primaryGroup) {
@@ -127,7 +126,7 @@ public final class IntegrationManager {
                 }
             }
             
-            LuckPerms.getApi().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
+            LuckPermsProvider.get().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
             ForumBridge.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId);
             return true;
         } catch (Exception ex) {
@@ -157,12 +156,12 @@ public final class IntegrationManager {
         
         DataMutateResult result = user.setPrimaryGroup(group);
         if (result == DataMutateResult.SUCCESS) {
-            ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getName(), user.getUuid());
+            ForumBridge.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getUsername(), user.getUniqueId());
             return true;
-        } else if (result == DataMutateResult.ALREADY_HAS) {
+        } else if (result == DataMutateResult.FAIL_ALREADY_HAS) {
             return true;
         } else {
-            ForumBridge.getInstance().getLogger().warn("Failed to set primary group to {} for {} ({})", group, user.getName(), user.getUuid());
+            ForumBridge.getInstance().getLogger().warn("Failed to set primary group to {} for {} ({})", group, user.getUsername(), user.getUniqueId());
             return false;
         }
     }

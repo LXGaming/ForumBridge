@@ -31,7 +31,7 @@ repositories {
 dependencies {
     api(project(path: ":api"))
     implementation("com.google.guava:guava:29.0-jre")
-    implementation("me.lucko.luckperms:luckperms-api:4.4")
+    implementation("net.luckperms:api:5.1")
     api("net.creationreborn:crapi:2.2.3")
 }
 
