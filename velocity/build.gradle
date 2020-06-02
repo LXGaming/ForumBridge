@@ -27,6 +27,10 @@ repositories {
         url = "https://dl.bintray.com/lxgaming/maven"
     }
     maven {
+        name = "minecraft"
+        url = "https://libraries.minecraft.net"
+    }
+    maven {
         name = "spongepowered"
         url = "https://repo.spongepowered.org/maven"
     }
