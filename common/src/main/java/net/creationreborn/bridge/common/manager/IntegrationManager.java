@@ -16,13 +16,10 @@
 
 package net.creationreborn.bridge.common.manager;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import net.creationreborn.api.CRAPI;
-import net.creationreborn.api.data.IdentityData;
-import net.creationreborn.bridge.api.Bridge;
-import net.creationreborn.bridge.api.configuration.Config;
-import net.creationreborn.bridge.common.util.Toolbox;
+import net.creationreborn.api.model.IdentityModel;
+import net.creationreborn.bridge.common.BridgeImpl;
+import net.creationreborn.bridge.common.util.StringUtils;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.data.DataMutateResult;
 import net.luckperms.api.model.user.User;
@@ -30,6 +27,8 @@ import net.luckperms.api.node.NodeEqualityPredicate;
 import net.luckperms.api.node.types.InheritanceNode;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,20 +36,20 @@ import java.util.concurrent.TimeUnit;
 
 public final class IntegrationManager {
     
-    private static final Map<String, String> GROUPS = Maps.newLinkedHashMap();
-    private static final Set<String> EXTERNAL_GROUPS = Sets.newHashSet();
-    private static final Map<String, InheritanceNode> NODES = Maps.newLinkedHashMap();
+    private static final Map<String, String> GROUPS = new LinkedHashMap<>();
+    private static final Set<String> EXTERNAL_GROUPS = new HashSet<>();
+    private static final Map<String, InheritanceNode> NODES = new LinkedHashMap<>();
     
     public static boolean prepare() {
-        Map<String, String> groups = Bridge.getInstance().getConfig().map(Config::getGroups).orElse(null);
+        Map<String, String> groups = BridgeImpl.getInstance().getConfig().getGroups();
         if (groups == null) {
-            Bridge.getInstance().getLogger().error("Failed to get groups from config");
+            BridgeImpl.getInstance().getLogger().error("Failed to get groups from config");
             return false;
         }
         
-        Set<String> externalGroups = Bridge.getInstance().getConfig().map(Config::getExternalGroups).orElse(null);
+        Set<String> externalGroups = BridgeImpl.getInstance().getConfig().getExternalGroups();
         if (externalGroups == null) {
-            Bridge.getInstance().getLogger().error("Failed to get external groups from config");
+            BridgeImpl.getInstance().getLogger().error("Failed to get external groups from config");
             return false;
         }
         
@@ -82,10 +81,10 @@ public final class IntegrationManager {
                 return false;
             }
             
-            IdentityData identity = CRAPI.getInstance().getForumEndpoint().getIdentity(uniqueId).sync();
+            IdentityModel identity = CRAPI.getInstance().getForumEndpoint().getIdentity(uniqueId).sync();
             Collection<String> groups = CRAPI.getInstance().getForumEndpoint().getGroups(identity.getUserId()).sync();
             
-            Bridge.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
+            BridgeImpl.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
             
             boolean primaryGroup = false;
             for (Map.Entry<String, InheritanceNode> entry : NODES.entrySet()) {
@@ -120,17 +119,17 @@ public final class IntegrationManager {
             
             if (!primaryGroup) {
                 if (setPrimaryGroup(user, "default")) {
-                    Bridge.getInstance().getLogger().debug("Set default as primary group for {}", uniqueId);
+                    BridgeImpl.getInstance().getLogger().debug("Set default as primary group for {}", uniqueId);
                 } else {
-                    Bridge.getInstance().getLogger().warn("Failed to set primary group for {}", uniqueId);
+                    BridgeImpl.getInstance().getLogger().warn("Failed to set primary group for {}", uniqueId);
                 }
             }
             
             LuckPermsProvider.get().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
-            Bridge.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId);
+            BridgeImpl.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId);
             return true;
         } catch (Exception ex) {
-            Bridge.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId, ex.getMessage());
+            BridgeImpl.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId, ex.getMessage());
             return false;
         }
     }
@@ -138,30 +137,30 @@ public final class IntegrationManager {
     public static boolean updateUser(UUID uniqueId, String username) {
         try {
             if (CRAPI.getInstance().getForumEndpoint().updateMinecraftUser(uniqueId, username).sync()) {
-                Bridge.getInstance().getLogger().debug("Successfully updated username for {}", uniqueId.toString());
+                BridgeImpl.getInstance().getLogger().debug("Successfully updated username for {}", uniqueId.toString());
                 return true;
             }
             
             return false;
         } catch (Exception ex) {
-            Bridge.getInstance().getLogger().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
+            BridgeImpl.getInstance().getLogger().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
             return false;
         }
     }
     
     private static boolean setPrimaryGroup(User user, String group) {
-        if (user == null || Toolbox.isBlank(group)) {
+        if (user == null || StringUtils.isBlank(group)) {
             return false;
         }
         
         DataMutateResult result = user.setPrimaryGroup(group);
         if (result == DataMutateResult.SUCCESS) {
-            Bridge.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getUsername(), user.getUniqueId());
+            BridgeImpl.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getUsername(), user.getUniqueId());
             return true;
         } else if (result == DataMutateResult.FAIL_ALREADY_HAS) {
             return true;
         } else {
-            Bridge.getInstance().getLogger().warn("Failed to set primary group to {} for {} ({})", group, user.getUsername(), user.getUniqueId());
+            BridgeImpl.getInstance().getLogger().warn("Failed to set primary group to {} for {} ({})", group, user.getUsername(), user.getUniqueId());
             return false;
         }
     }

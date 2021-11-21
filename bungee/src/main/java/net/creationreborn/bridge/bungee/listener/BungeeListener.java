@@ -17,7 +17,10 @@
 package net.creationreborn.bridge.bungee.listener;
 
 import net.creationreborn.bridge.bungee.BungeePlugin;
+import net.creationreborn.bridge.bungee.event.PaymentEventImpl;
+import net.creationreborn.bridge.bungee.event.RegistrationEventImpl;
 import net.creationreborn.bridge.common.manager.IntegrationManager;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -30,5 +33,26 @@ public class BungeeListener implements Listener {
             IntegrationManager.updateUser(event.getPlayer().getUniqueId(), event.getPlayer().getName());
             IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
         });
+    }
+    
+    @EventHandler
+    public void onPayment(PaymentEventImpl event) {
+        ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUniqueId());
+        if (player == null || !player.isConnected()) {
+            return;
+        }
+        
+        IntegrationManager.updateGroups(player.getUniqueId());
+    }
+    
+    @EventHandler
+    public void onRegistration(RegistrationEventImpl event) {
+        ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUsername());
+        if (player == null || !player.isConnected()) {
+            return;
+        }
+        
+        IntegrationManager.updateUser(player.getUniqueId(), player.getName());
+        IntegrationManager.updateGroups(player.getUniqueId());
     }
 }

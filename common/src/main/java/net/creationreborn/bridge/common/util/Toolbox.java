@@ -18,66 +18,27 @@ package net.creationreborn.bridge.common.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-
-import java.util.Optional;
 
 public class Toolbox {
     
     public static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
             .enableComplexMapKeySerialization()
-            .setPrettyPrinting()
             .create();
     
-    public static <T> Optional<T> parseJson(String json, Class<T> type) {
-        try {
-            return Optional.of(GSON.fromJson(json, type));
-        } catch (RuntimeException ex) {
-            return Optional.empty();
-        }
-    }
-    
-    public static <T> Optional<T> parseJson(JsonElement jsonElement, Class<T> type) {
-        try {
-            return Optional.of(GSON.fromJson(jsonElement, type));
-        } catch (RuntimeException ex) {
-            return Optional.empty();
-        }
-    }
-    
-    public static boolean isBlank(CharSequence charSequence) {
-        int stringLength;
-        if (charSequence == null || (stringLength = charSequence.length()) == 0) {
-            return true;
+    public static String getClassSimpleName(Class<?> type) {
+        if (type.getEnclosingClass() != null) {
+            return getClassSimpleName(type.getEnclosingClass()) + "." + type.getSimpleName();
         }
         
-        for (int index = 0; index < stringLength; index++) {
-            if (!Character.isWhitespace(charSequence.charAt(index))) {
-                return false;
-            }
-        }
-        
-        return true;
+        return type.getSimpleName();
     }
     
-    public static boolean isNotBlank(CharSequence charSequence) {
-        return !isBlank(charSequence);
-    }
-    
-    public static String getClassSimpleName(Class<?> clazz) {
-        if (clazz.getEnclosingClass() != null) {
-            return getClassSimpleName(clazz.getEnclosingClass()) + "." + clazz.getSimpleName();
-        }
-        
-        return clazz.getSimpleName();
-    }
-    
-    public static <T> Optional<T> newInstance(Class<? extends T> typeOfT) {
+    public static <T> T newInstance(Class<? extends T> type) {
         try {
-            return Optional.of(typeOfT.newInstance());
-        } catch (Exception ex) {
-            return Optional.empty();
+            return type.newInstance();
+        } catch (Throwable ex) {
+            return null;
         }
     }
 }

@@ -17,35 +17,36 @@
 package net.creationreborn.bridge.velocity.util;
 
 import net.creationreborn.bridge.api.Bridge;
-import net.kyori.text.TextComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class VelocityToolbox {
     
     public static TextComponent getTextPrefix() {
-        TextComponent.Builder textBuilder = TextComponent.builder();
-        textBuilder.hoverEvent(HoverEvent.of(HoverEvent.Action.SHOW_TEXT, getPluginInformation()));
-        textBuilder.content("[" + Bridge.NAME + "]").color(TextColor.BLUE).decoration(TextDecoration.BOLD, true);
-        return TextComponent.of("").append(textBuilder.build()).append(TextComponent.of(" "));
+        TextComponent.Builder textBuilder = Component.text();
+        textBuilder.hoverEvent(HoverEvent.showText(getPluginInformation()));
+        textBuilder.content("[" + Bridge.NAME + "]").color(NamedTextColor.BLUE).decoration(TextDecoration.BOLD, true);
+        return Component.text("").append(textBuilder.build()).append(Component.text(" "));
     }
     
     public static TextComponent getPluginInformation() {
-        TextComponent.Builder textBuilder = TextComponent.builder("");
-        textBuilder.append(TextComponent.of(Bridge.NAME, TextColor.BLUE).decoration(TextDecoration.BOLD, true)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Version: ", TextColor.DARK_GRAY)).append(TextComponent.of(Bridge.VERSION, TextColor.WHITE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Authors: ", TextColor.DARK_GRAY)).append(TextComponent.of(Bridge.AUTHORS, TextColor.WHITE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Source: ", TextColor.DARK_GRAY)).append(getURLTextAction(Bridge.SOURCE)).append(TextComponent.newline());
-        textBuilder.append(TextComponent.of("    Website: ", TextColor.DARK_GRAY)).append(getURLTextAction(Bridge.WEBSITE));
+        TextComponent.Builder textBuilder = Component.text();
+        textBuilder.append(Component.text(Bridge.NAME, NamedTextColor.BLUE).decoration(TextDecoration.BOLD, true)).append(Component.newline());
+        textBuilder.append(Component.text("    Version: ", NamedTextColor.DARK_GRAY)).append(Component.text(Bridge.VERSION, NamedTextColor.WHITE)).append(Component.newline());
+        textBuilder.append(Component.text("    Authors: ", NamedTextColor.DARK_GRAY)).append(Component.text(Bridge.AUTHORS, NamedTextColor.WHITE)).append(Component.newline());
+        textBuilder.append(Component.text("    Source: ", NamedTextColor.DARK_GRAY)).append(getURLTextAction(Bridge.SOURCE)).append(Component.newline());
+        textBuilder.append(Component.text("    Website: ", NamedTextColor.DARK_GRAY)).append(getURLTextAction(Bridge.WEBSITE));
         return textBuilder.build();
     }
     
     public static TextComponent getURLTextAction(String url) {
-        TextComponent.Builder textBuilder = TextComponent.builder();
-        textBuilder.clickEvent(ClickEvent.of(ClickEvent.Action.OPEN_URL, url));
-        textBuilder.content(url).color(TextColor.BLUE);
+        TextComponent.Builder textBuilder = Component.text();
+        textBuilder.clickEvent(ClickEvent.openUrl(url));
+        textBuilder.content(url).color(NamedTextColor.BLUE);
         return textBuilder.build();
     }
 }

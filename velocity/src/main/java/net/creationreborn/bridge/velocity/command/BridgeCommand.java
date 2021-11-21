@@ -17,27 +17,28 @@
 package net.creationreborn.bridge.velocity.command;
 
 import com.google.common.collect.ImmutableList;
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import net.creationreborn.bridge.velocity.BridgeImpl;
+import com.velocitypowered.api.command.SimpleCommand;
+import net.creationreborn.bridge.common.BridgeImpl;
 import net.creationreborn.bridge.velocity.VelocityPlugin;
 import net.creationreborn.bridge.velocity.util.VelocityToolbox;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.List;
 
-public class BridgeCommand implements Command {
+public class BridgeCommand implements SimpleCommand {
     
     @Override
-    public void execute(@NonNull CommandSource source, String[] args) {
-        if (args.length == 1 && args[0].equalsIgnoreCase("reload") && source.hasPermission("bridge.reload.base")) {
+    public void execute(Invocation invocation) {
+        CommandSource source = invocation.source();
+        String[] arguments = invocation.arguments();
+        if (arguments.length == 1 && arguments[0].equalsIgnoreCase("reload") && source.hasPermission("bridge.reload.base")) {
             VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
                 if (BridgeImpl.getInstance().reload()) {
-                    source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("Configuration reloaded", TextColor.GREEN)));
+                    source.sendMessage(VelocityToolbox.getTextPrefix().append(Component.text("Configuration reloaded", NamedTextColor.GREEN)));
                 } else {
-                    source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("An error occurred. Please check the console", TextColor.RED)));
+                    source.sendMessage(VelocityToolbox.getTextPrefix().append(Component.text("An error occurred. Please check the console", NamedTextColor.RED)));
                 }
             }).schedule();
             return;
@@ -47,8 +48,8 @@ public class BridgeCommand implements Command {
     }
     
     @Override
-    public List<String> suggest(@NonNull CommandSource source, String[] currentArgs) {
-        if (currentArgs.length == 0 && source.hasPermission("bridge.reload.base")) {
+    public List<String> suggest(Invocation invocation) {
+        if (invocation.arguments().length == 0 && invocation.source().hasPermission("bridge.reload.base")) {
             return ImmutableList.of("reload");
         }
         
@@ -56,7 +57,7 @@ public class BridgeCommand implements Command {
     }
     
     @Override
-    public boolean hasPermission(@NonNull CommandSource source, String[] args) {
+    public boolean hasPermission(Invocation invocation) {
         return true;
     }
 }

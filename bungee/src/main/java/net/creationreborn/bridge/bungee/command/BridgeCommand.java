@@ -17,8 +17,8 @@
 package net.creationreborn.bridge.bungee.command;
 
 import net.creationreborn.bridge.bungee.BungeePlugin;
-import net.creationreborn.bridge.bungee.BridgeImpl;
 import net.creationreborn.bridge.bungee.util.BungeeToolbox;
+import net.creationreborn.bridge.common.BridgeImpl;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;

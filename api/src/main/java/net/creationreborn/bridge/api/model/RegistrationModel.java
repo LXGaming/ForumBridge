@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package net.creationreborn.bridge.api.network.packet;
+package net.creationreborn.bridge.api.model;
 
 import com.google.gson.annotations.SerializedName;
-import net.creationreborn.bridge.api.network.NetworkHandler;
-import net.creationreborn.bridge.api.network.Packet;
 
-public class RegistrationPacket implements Packet {
+public class RegistrationModel {
     
     private String username;
     
     @SerializedName("minecraft_username")
     private String minecraftUsername;
-    
-    @Override
-    public void process(NetworkHandler networkHandler) {
-        networkHandler.handle(this);
-    }
     
     public String getUsername() {
         return username;

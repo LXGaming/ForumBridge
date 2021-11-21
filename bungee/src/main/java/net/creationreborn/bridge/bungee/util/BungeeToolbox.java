@@ -21,12 +21,13 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class BungeeToolbox {
     
     public static ComponentBuilder getTextPrefix() {
         ComponentBuilder componentBuilder = new ComponentBuilder("");
-        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, getPluginInformation().create()));
+        componentBuilder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getPluginInformation().create())));
         componentBuilder.append("[" + Bridge.NAME + "]").bold(true).color(ChatColor.BLUE);
         componentBuilder.append(" ", ComponentBuilder.FormatRetention.NONE);
         return componentBuilder;

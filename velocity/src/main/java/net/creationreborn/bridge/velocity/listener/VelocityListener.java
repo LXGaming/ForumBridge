@@ -18,8 +18,11 @@ package net.creationreborn.bridge.velocity.listener;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.proxy.Player;
 import net.creationreborn.bridge.common.manager.IntegrationManager;
 import net.creationreborn.bridge.velocity.VelocityPlugin;
+import net.creationreborn.bridge.velocity.event.PaymentEventImpl;
+import net.creationreborn.bridge.velocity.event.RegistrationEventImpl;
 
 public class VelocityListener {
     
@@ -29,5 +32,26 @@ public class VelocityListener {
             IntegrationManager.updateUser(event.getPlayer().getUniqueId(), event.getPlayer().getUsername());
             IntegrationManager.updateGroups(event.getPlayer().getUniqueId());
         }).schedule();
+    }
+    
+    @Subscribe
+    public void onPayment(PaymentEventImpl event) {
+        Player player = VelocityPlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUniqueId()).orElse(null);
+        if (player == null || !player.isActive()) {
+            return;
+        }
+        
+        IntegrationManager.updateGroups(player.getUniqueId());
+    }
+    
+    @Subscribe
+    public void onRegistration(RegistrationEventImpl event) {
+        Player player = VelocityPlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUsername()).orElse(null);
+        if (player == null || !player.isActive()) {
+            return;
+        }
+        
+        IntegrationManager.updateUser(player.getUniqueId(), player.getUsername());
+        IntegrationManager.updateGroups(player.getUniqueId());
     }
 }

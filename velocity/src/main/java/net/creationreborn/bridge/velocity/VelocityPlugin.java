@@ -26,14 +26,15 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import io.github.lxgaming.redisvelocity.api.RedisVelocity;
 import net.creationreborn.bridge.api.Bridge;
-import net.creationreborn.bridge.api.configuration.Config;
-import net.creationreborn.bridge.api.util.Logger;
+import net.creationreborn.bridge.common.BridgeImpl;
 import net.creationreborn.bridge.velocity.command.BridgeCommand;
+import net.creationreborn.bridge.velocity.configuration.ConfigImpl;
+import net.creationreborn.bridge.velocity.configuration.ConfigurationImpl;
 import net.creationreborn.bridge.velocity.listener.RedisListener;
 import net.creationreborn.bridge.velocity.listener.VelocityListener;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Plugin(
         id = Bridge.ID,
@@ -50,6 +51,7 @@ import java.nio.file.Path;
 public class VelocityPlugin {
     
     private static VelocityPlugin instance;
+    private ConfigurationImpl configuration;
     
     @Inject
     private ProxyServer proxy;
@@ -61,38 +63,61 @@ public class VelocityPlugin {
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
         instance = this;
-        BridgeImpl bridge = new BridgeImpl();
-        bridge.getLogger()
-                .add(Logger.Level.INFO, LoggerFactory.getLogger(Bridge.NAME)::info)
-                .add(Logger.Level.WARN, LoggerFactory.getLogger(Bridge.NAME)::warn)
-                .add(Logger.Level.ERROR, LoggerFactory.getLogger(Bridge.NAME)::error)
-                .add(Logger.Level.DEBUG, message -> {
-                    if (Bridge.getInstance().getConfig().map(Config::isDebug).orElse(false)) {
-                        LoggerFactory.getLogger(Bridge.NAME).info(message);
-                    }
-                });
-    
-        bridge.load();
+        
+        this.configuration = new ConfigurationImpl(path);
+        
+        BridgeImpl.init();
+        
+        if (!getConfiguration().loadConfiguration()) {
+            BridgeImpl.getInstance().getLogger().error("Failed to load");
+            return;
+        }
+        
+        if (BridgeImpl.getInstance().getConfig() == null) {
+            getConfig().ifPresent(BridgeImpl.getInstance()::setConfig);
+        }
+        
+        if (!BridgeImpl.getInstance().reload()) {
+            return;
+        }
+        
+        getConfiguration().saveConfiguration();
         
         getProxy().getCommandManager().register("bridge", new BridgeCommand());
         getProxy().getEventManager().register(getInstance(), new VelocityListener());
         
         if (getProxy().getPluginManager().isLoaded("redisvelocity")) {
-            Bridge.getInstance().getLogger().info("RedisVelocity detected");
+            BridgeImpl.getInstance().getLogger().info("RedisVelocity detected");
             getProxy().getEventManager().register(getInstance(), new RedisListener());
             RedisVelocity.getInstance().registerChannels("forum");
         }
+        
+        BridgeImpl.getInstance().getLogger().info("{} v{} has started.", Bridge.NAME, Bridge.VERSION);
     }
     
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (!BridgeImpl.isAvailable()) {
+            return;
+        }
+        
         if (getProxy().getPluginManager().isLoaded("redisvelocity")) {
             RedisVelocity.getInstance().unregisterChannels("forum");
         }
+        
+        BridgeImpl.getInstance().getLogger().info("{} v{} unloaded", Bridge.NAME, Bridge.VERSION);
     }
     
     public static VelocityPlugin getInstance() {
         return instance;
+    }
+    
+    public ConfigurationImpl getConfiguration() {
+        return configuration;
+    }
+    
+    public Optional<ConfigImpl> getConfig() {
+        return Optional.ofNullable(getConfiguration().getConfig());
     }
     
     public ProxyServer getProxy() {

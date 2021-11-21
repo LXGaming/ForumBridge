@@ -18,8 +18,7 @@ package net.creationreborn.bridge.common.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.creationreborn.bridge.api.Bridge;
-import net.creationreborn.bridge.api.configuration.Config;
+import net.creationreborn.bridge.common.BridgeImpl;
 import net.creationreborn.bridge.common.util.Toolbox;
 
 import java.io.Reader;
@@ -28,9 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Optional;
 
-public class Configuration {
+public abstract class Configuration {
     
     private static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
@@ -38,33 +36,28 @@ public class Configuration {
             .setPrettyPrinting()
             .create();
     
-    private final Path path;
+    protected final Path path;
     protected Config config;
     
     public Configuration(Path path) {
         this.path = path;
     }
     
-    public boolean loadConfiguration() {
-        Optional<Config> config = loadFile(getPath().resolve("config.json"), Config.class);
-        if (config.isPresent()) {
-            this.config = config.get();
-            return true;
-        }
-        
-        return false;
-    }
+    public abstract boolean loadConfiguration();
     
-    public boolean saveConfiguration() {
-        return saveFile(getPath().resolve("config.json"), config);
-    }
+    public abstract boolean saveConfiguration();
     
-    public static <T> Optional<T> loadFile(Path path, Class<T> typeOfT) {
+    public static <T> T loadFile(Path path, Class<T> type) {
         if (Files.exists(path)) {
-            return deserializeFile(path, typeOfT);
+            return deserializeFile(path, type);
         }
         
-        return Toolbox.newInstance(typeOfT).filter(object -> saveFile(path, object));
+        T object = Toolbox.newInstance(type);
+        if (object != null && saveFile(path, object)) {
+            return object;
+        }
+        
+        return null;
     }
     
     public static boolean saveFile(Path path, Object object) {
@@ -75,21 +68,21 @@ public class Configuration {
         return false;
     }
     
-    public static <T> Optional<T> deserializeFile(Path path, Class<T> typeOfT) {
+    public static <T> T deserializeFile(Path path, Class<T> type) {
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            return Optional.ofNullable(getGson().fromJson(reader, typeOfT));
+            return GSON.fromJson(reader, type);
         } catch (Exception ex) {
-            Bridge.getInstance().getLogger().error("Encountered an error while deserializing {}", path, ex);
-            return Optional.empty();
+            BridgeImpl.getInstance().getLogger().error("Encountered an error while deserializing {}", path, ex);
+            return null;
         }
     }
     
     public static boolean serializeFile(Path path, Object object) {
         try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
-            getGson().toJson(object, writer);
+            GSON.toJson(object, writer);
             return true;
         } catch (Exception ex) {
-            Bridge.getInstance().getLogger().error("Encountered an error while serializing {}", path, ex);
+            BridgeImpl.getInstance().getLogger().error("Encountered an error while serializing {}", path, ex);
             return false;
         }
     }
@@ -103,17 +96,9 @@ public class Configuration {
             Files.createFile(path);
             return true;
         } catch (Exception ex) {
-            Bridge.getInstance().getLogger().error("Encountered an error while creating {}", path, ex);
+            BridgeImpl.getInstance().getLogger().error("Encountered an error while creating {}", path, ex);
             return false;
         }
-    }
-    
-    public static Gson getGson() {
-        return GSON;
-    }
-    
-    protected Path getPath() {
-        return path;
     }
     
     public Config getConfig() {

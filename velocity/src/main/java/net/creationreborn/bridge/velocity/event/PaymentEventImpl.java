@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package net.creationreborn.bridge.api.network;
+package net.creationreborn.bridge.velocity.event;
 
-public interface Packet {
+import net.creationreborn.bridge.api.event.PaymentEvent;
+import net.creationreborn.bridge.api.model.PaymentModel;
+
+public class PaymentEventImpl implements PaymentEvent {
     
-    void process(NetworkHandler networkHandler);
+    private final PaymentModel model;
+    
+    public PaymentEventImpl(PaymentModel model) {
+        this.model = model;
+    }
+    
+    @Override
+    public PaymentModel getModel() {
+        return model;
+    }
 }

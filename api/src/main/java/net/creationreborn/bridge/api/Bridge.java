@@ -16,12 +16,6 @@
 
 package net.creationreborn.bridge.api;
 
-import net.creationreborn.bridge.api.configuration.Config;
-import net.creationreborn.bridge.api.network.NetworkHandler;
-import net.creationreborn.bridge.api.util.Logger;
-
-import java.util.Optional;
-
 public abstract class Bridge {
     
     public static final String ID = "bridge";
@@ -33,25 +27,24 @@ public abstract class Bridge {
     public static final String WEBSITE = "https://creationreborn.net/";
     
     private static Bridge instance;
-    protected Logger logger;
     
     protected Bridge() {
-        instance = this;
+        Bridge.instance = this;
     }
     
-    protected abstract void load();
-    
-    protected abstract boolean reload();
-    
-    public abstract boolean registerNetworkHandler(Class<? extends NetworkHandler> networkHandlerClass);
-    
-    public abstract Optional<? extends Config> getConfig();
-    
-    public static Bridge getInstance() {
+    private static <T> T check(T instance) {
+        if (instance == null) {
+            throw new IllegalStateException(String.format("%s has not been initialized!", Bridge.NAME));
+        }
+        
         return instance;
     }
     
-    public final Logger getLogger() {
-        return logger;
+    public static boolean isAvailable() {
+        return instance != null;
+    }
+    
+    public static Bridge getInstance() {
+        return check(instance);
     }
 }

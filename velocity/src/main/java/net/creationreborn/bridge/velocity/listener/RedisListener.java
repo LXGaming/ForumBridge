@@ -16,19 +16,36 @@
 
 package net.creationreborn.bridge.velocity.listener;
 
-import com.google.gson.JsonObject;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import io.github.lxgaming.redisvelocity.api.event.RedisMessageEvent;
-import net.creationreborn.bridge.common.manager.PacketManager;
+import net.creationreborn.bridge.api.model.PaymentModel;
+import net.creationreborn.bridge.api.model.RegistrationModel;
+import net.creationreborn.bridge.common.BridgeImpl;
+import net.creationreborn.bridge.common.manager.MessageManager;
+import net.creationreborn.bridge.common.util.StringUtils;
 import net.creationreborn.bridge.common.util.Toolbox;
+import net.creationreborn.bridge.velocity.VelocityPlugin;
+import net.creationreborn.bridge.velocity.event.PaymentEventImpl;
+import net.creationreborn.bridge.velocity.event.RegistrationEventImpl;
 
 public class RedisListener {
     
     @Subscribe(order = PostOrder.LATE)
     public void onRedisMessage(RedisMessageEvent event) {
-        if (Toolbox.isNotBlank(event.getChannel()) && event.getChannel().equals("forum")) {
-            Toolbox.parseJson(event.getMessage(), JsonObject.class).ifPresent(PacketManager::process);
+        if (StringUtils.isBlank(event.getChannel()) || !event.getChannel().equals("forum")) {
+            return;
+        }
+        
+        Object data = MessageManager.parse(event.getMessage());
+        if (data == null) {
+            // no-op
+        } else if (data instanceof PaymentModel) {
+            VelocityPlugin.getInstance().getProxy().getEventManager().fireAndForget(new PaymentEventImpl((PaymentModel) data));
+        } else if (data instanceof RegistrationModel) {
+            VelocityPlugin.getInstance().getProxy().getEventManager().fireAndForget(new RegistrationEventImpl((RegistrationModel) data));
+        } else {
+            BridgeImpl.getInstance().getLogger().warn("Unhandled message {}", Toolbox.getClassSimpleName(data.getClass()));
         }
     }
 }

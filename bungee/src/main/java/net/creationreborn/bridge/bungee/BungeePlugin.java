@@ -18,51 +18,87 @@ package net.creationreborn.bridge.bungee;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import net.creationreborn.bridge.api.Bridge;
-import net.creationreborn.bridge.api.configuration.Config;
-import net.creationreborn.bridge.api.util.Logger;
 import net.creationreborn.bridge.bungee.command.BridgeCommand;
+import net.creationreborn.bridge.bungee.configuration.ConfigImpl;
+import net.creationreborn.bridge.bungee.configuration.ConfigurationImpl;
 import net.creationreborn.bridge.bungee.listener.BungeeListener;
 import net.creationreborn.bridge.bungee.listener.RedisListener;
+import net.creationreborn.bridge.common.BridgeImpl;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.util.Optional;
 
 public class BungeePlugin extends Plugin {
     
     private static BungeePlugin instance;
+    private ConfigurationImpl configuration;
     
     @Override
     public void onEnable() {
         instance = this;
-        BridgeImpl bridge = new BridgeImpl();
-        bridge.getLogger()
-                .add(Logger.Level.INFO, getLogger()::info)
-                .add(Logger.Level.WARN, getLogger()::warning)
-                .add(Logger.Level.ERROR, getLogger()::severe)
-                .add(Logger.Level.DEBUG, message -> {
-                    if (Bridge.getInstance().getConfig().map(Config::isDebug).orElse(false)) {
-                        BungeePlugin.getInstance().getLogger().info(message);
-                    }
-                });
-    
-        bridge.load();
+        
+        if (getProxy().getName().equalsIgnoreCase("BungeeCord")) {
+            getLogger().severe("\n\n"
+                    + "  BungeeCord is not supported - https://github.com/SpigotMC/BungeeCord/pull/1877\n"
+                    + "\n"
+                    + "  Use Waterfall - https://github.com/PaperMC/Waterfall\n"
+            );
+            return;
+        }
+        
+        this.configuration = new ConfigurationImpl(getDataFolder().toPath());
+        
+        BridgeImpl.init();
+        
+        if (!getConfiguration().loadConfiguration()) {
+            BridgeImpl.getInstance().getLogger().error("Failed to load");
+            return;
+        }
+        
+        if (BridgeImpl.getInstance().getConfig() == null) {
+            getConfig().ifPresent(BridgeImpl.getInstance()::setConfig);
+        }
+        
+        if (!BridgeImpl.getInstance().reload()) {
+            return;
+        }
+        
+        getConfiguration().saveConfiguration();
         
         getProxy().getPluginManager().registerCommand(getInstance(), new BridgeCommand());
         getProxy().getPluginManager().registerListener(getInstance(), new BungeeListener());
         
         if (getProxy().getPluginManager().getPlugin("RedisBungee") != null) {
-            Bridge.getInstance().getLogger().info("RedisBungee detected");
+            BridgeImpl.getInstance().getLogger().info("RedisBungee detected");
             getProxy().getPluginManager().registerListener(getInstance(), new RedisListener());
             RedisBungee.getApi().registerPubSubChannels("forum");
         }
+        
+        BridgeImpl.getInstance().getLogger().info("{} v{} has started.", Bridge.NAME, Bridge.VERSION);
     }
     
     @Override
     public void onDisable() {
+        if (!BridgeImpl.isAvailable()) {
+            return;
+        }
+        
         if (getProxy().getPluginManager().getPlugin("RedisBungee") != null) {
             RedisBungee.getApi().registerPubSubChannels("forum");
         }
+        
+        BridgeImpl.getInstance().getLogger().info("{} v{} unloaded", Bridge.NAME, Bridge.VERSION);
     }
     
     public static BungeePlugin getInstance() {
         return instance;
+    }
+    
+    public ConfigurationImpl getConfiguration() {
+        return configuration;
+    }
+    
+    public Optional<ConfigImpl> getConfig() {
+        return Optional.ofNullable(getConfiguration().getConfig());
     }
 }

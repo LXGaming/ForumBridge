@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.creationreborn.bridge.api.network.packet;
+package net.creationreborn.bridge.api.model;
 
 import com.google.gson.annotations.SerializedName;
-import net.creationreborn.bridge.api.network.NetworkHandler;
-import net.creationreborn.bridge.api.network.Packet;
 
 import java.util.UUID;
 
-public class PaymentPacket implements Packet {
+public class PaymentModel {
     
     private String item;
     private String cost;
@@ -34,11 +32,6 @@ public class PaymentPacket implements Packet {
     
     private Result result;
     private String provider;
-    
-    @Override
-    public void process(NetworkHandler networkHandler) {
-        networkHandler.handle(this);
-    }
     
     public String getItem() {
         return item;
@@ -71,19 +64,17 @@ public class PaymentPacket implements Packet {
     public enum Result {
         
         @SerializedName("1")
-        PAYMENT_RECEIVED(1, "Received"),
+        PAYMENT_RECEIVED("Received"),
         
         @SerializedName("2")
-        PAYMENT_REVERSED(2, "Reversed"),
+        PAYMENT_REVERSED("Reversed"),
         
         @SerializedName("3")
-        PAYMENT_REINSTATED(3, "Reinstated");
+        PAYMENT_REINSTATED("Reinstated");
         
-        private final int ordinal;
         private final String name;
         
-        Result(int ordinal, String name) {
-            this.ordinal = ordinal;
+        Result(String name) {
             this.name = name;
         }
         

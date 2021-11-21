@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package net.creationreborn.bridge.api.network;
+package net.creationreborn.bridge.bungee.event;
 
-import net.creationreborn.bridge.api.network.packet.PaymentPacket;
-import net.creationreborn.bridge.api.network.packet.RegistrationPacket;
+import net.creationreborn.bridge.api.event.PaymentEvent;
+import net.creationreborn.bridge.api.model.PaymentModel;
+import net.md_5.bungee.api.plugin.Event;
 
-public interface NetworkHandler {
+public class PaymentEventImpl extends Event implements PaymentEvent {
     
-    boolean handle(Packet packet);
+    private final PaymentModel model;
     
-    void handle(PaymentPacket packet);
+    public PaymentEventImpl(PaymentModel model) {
+        this.model = model;
+    }
     
-    void handle(RegistrationPacket packet);
+    @Override
+    public PaymentModel getModel() {
+        return model;
+    }
 }

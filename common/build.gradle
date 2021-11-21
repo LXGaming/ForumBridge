@@ -11,17 +11,13 @@ configurations {
 }
 
 repositories {
-    maven {
-        name = "covers1624"
-        url = "https://maven.covers1624.net/"
-    }
 }
 
 dependencies {
     api(project(path: ":bridge-api"))
-    implementation("com.google.guava:guava:29.0-jre")
-    implementation("net.luckperms:api:5.1")
-    api("net.creationreborn:crapi:2.2.3")
+    api("net.creationreborn:crapi-api:2.4.0")
+    implementation("net.luckperms:api:5.3")
+    api("org.slf4j:slf4j-api:1.7.32")
 }
 
 compileJava {

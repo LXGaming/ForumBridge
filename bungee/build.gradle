@@ -12,10 +12,6 @@ configurations {
 
 repositories {
     maven {
-        name = "covers1624"
-        url = "https://maven.covers1624.net/"
-    }
-    maven {
         name = "md-5"
         url = "https://repo.md-5.net/content/groups/public"
     }
@@ -27,13 +23,14 @@ repositories {
 
 dependencies {
     implementation(project(path: ":bridge-common")) {
-        exclude(module: "crapi")
-        exclude(module: "gson")
-        exclude(module: "guava")
         exclude(module: "api")
+        exclude(module: "crapi-api")
+        exclude(module: "gson")
+        exclude(module: "slf4j-api")
     }
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
-    compileOnly("net.md-5:bungeecord-api:1.15-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT")
+    compileOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.14.1")
 }
 
 compileJava {

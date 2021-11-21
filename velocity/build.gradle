@@ -13,10 +13,6 @@ configurations {
 repositories {
     mavenCentral()
     maven {
-        name = "covers1624"
-        url = "https://maven.covers1624.net/"
-    }
-    maven {
         name = "minecraft"
         url = "https://libraries.minecraft.net"
     }
@@ -32,14 +28,14 @@ repositories {
 
 dependencies {
     implementation(project(path: ":bridge-common")) {
-        exclude(module: "crapi")
-        exclude(module: "gson")
-        exclude(module: "guava")
         exclude(module: "api")
+        exclude(module: "crapi-api")
+        exclude(module: "gson")
+        exclude(module: "slf4j-api")
     }
-    annotationProcessor("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
-    compileOnly("com.velocitypowered:velocity-api:1.1.0-SNAPSHOT")
-    compileOnly("io.github.lxgaming:redisvelocity-api:1.1.3")
+    annotationProcessor("com.velocitypowered:velocity-api:3.0.1")
+    compileOnly("com.velocitypowered:velocity-api:3.0.1")
+    compileOnly("io.github.lxgaming:redisvelocity-api:1.2.2")
 }
 
 compileJava {

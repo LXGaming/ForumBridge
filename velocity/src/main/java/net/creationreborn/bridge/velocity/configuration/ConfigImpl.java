@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,25 @@
 
 package net.creationreborn.bridge.velocity.configuration;
 
-import net.creationreborn.bridge.common.configuration.Configuration;
+import net.creationreborn.bridge.common.configuration.Config;
 
-import java.nio.file.Path;
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class VelocityConfiguration extends Configuration {
+public class ConfigImpl implements Config {
     
-    public VelocityConfiguration(Path path) {
-        super(path);
+    private Map<String, String> groups = new LinkedHashMap<>();
+    private Set<String> externalGroups = new LinkedHashSet<>();
+    
+    @Override
+    public Map<String, String> getGroups() {
+        return groups;
     }
     
     @Override
-    public boolean loadConfiguration() {
-        Optional<VelocityConfig> config = loadFile(getPath().resolve("config.json"), VelocityConfig.class);
-        if (config.isPresent()) {
-            this.config = config.get();
-            return true;
-        }
-        
-        return false;
-    }
-    
-    @Override
-    public VelocityConfig getConfig() {
-        return (VelocityConfig) super.getConfig();
+    public Set<String> getExternalGroups() {
+        return externalGroups;
     }
 }

@@ -16,9 +16,15 @@
 
 package net.creationreborn.bridge.bungee.listener;
 
-import com.google.gson.JsonObject;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
-import net.creationreborn.bridge.common.manager.PacketManager;
+import net.creationreborn.bridge.api.model.PaymentModel;
+import net.creationreborn.bridge.api.model.RegistrationModel;
+import net.creationreborn.bridge.bungee.BungeePlugin;
+import net.creationreborn.bridge.bungee.event.PaymentEventImpl;
+import net.creationreborn.bridge.bungee.event.RegistrationEventImpl;
+import net.creationreborn.bridge.common.BridgeImpl;
+import net.creationreborn.bridge.common.manager.MessageManager;
+import net.creationreborn.bridge.common.util.StringUtils;
 import net.creationreborn.bridge.common.util.Toolbox;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -27,8 +33,19 @@ public class RedisListener implements Listener {
     
     @EventHandler
     public void onPubSubMessage(PubSubMessageEvent event) {
-        if (Toolbox.isNotBlank(event.getChannel()) && event.getChannel().equals("forum")) {
-            Toolbox.parseJson(event.getMessage(), JsonObject.class).ifPresent(PacketManager::process);
+        if (StringUtils.isBlank(event.getChannel()) || !event.getChannel().equals("forum")) {
+            return;
+        }
+        
+        Object data = MessageManager.parse(event.getMessage());
+        if (data == null) {
+            // no-op
+        } else if (data instanceof PaymentModel) {
+            BungeePlugin.getInstance().getProxy().getPluginManager().callEvent(new PaymentEventImpl((PaymentModel) data));
+        } else if (data instanceof RegistrationModel) {
+            BungeePlugin.getInstance().getProxy().getPluginManager().callEvent(new RegistrationEventImpl((RegistrationModel) data));
+        } else {
+            BridgeImpl.getInstance().getLogger().warn("Unhandled message {}", Toolbox.getClassSimpleName(data.getClass()));
         }
     }
 }

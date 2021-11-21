@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package net.creationreborn.bridge.api.configuration;
+package net.creationreborn.bridge.common.configuration;
 
 import java.util.Map;
 import java.util.Set;
 
 public interface Config {
-    
-    boolean isDebug();
     
     Map<String, String> getGroups();
     

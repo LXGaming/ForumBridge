@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 creationreborn.net
+ * Copyright 2021 creationreborn.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,34 @@
 
 package net.creationreborn.bridge.bungee.configuration;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import net.creationreborn.bridge.api.configuration.Config;
+import net.creationreborn.bridge.common.configuration.Configuration;
 
-import java.util.Map;
-import java.util.Set;
+import java.nio.file.Path;
 
-public class BungeeConfig implements Config {
+public class ConfigurationImpl extends Configuration {
     
-    private boolean debug = false;
-    private Map<String, String> groups = Maps.newLinkedHashMap();
-    private Set<String> externalGroups = Sets.newHashSet();
-    
-    @Override
-    public boolean isDebug() {
-        return debug;
+    public ConfigurationImpl(Path path) {
+        super(path);
     }
     
     @Override
-    public Map<String, String> getGroups() {
-        return groups;
+    public boolean loadConfiguration() {
+        ConfigImpl config = loadFile(path.resolve("config.json"), ConfigImpl.class);
+        if (config != null) {
+            this.config = config;
+            return true;
+        }
+        
+        return false;
     }
     
     @Override
-    public Set<String> getExternalGroups() {
-        return externalGroups;
+    public boolean saveConfiguration() {
+        return saveFile(path.resolve("config.json"), config);
+    }
+    
+    @Override
+    public ConfigImpl getConfig() {
+        return (ConfigImpl) super.getConfig();
     }
 }
