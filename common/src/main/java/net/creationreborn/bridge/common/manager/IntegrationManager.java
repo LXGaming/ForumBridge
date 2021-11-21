@@ -67,6 +67,8 @@ public final class IntegrationManager {
             NODES.put(entry.getKey(), InheritanceNode.builder().group(entry.getValue()).build());
         }
         
+        BridgeImpl.getInstance().getLogger().info("Loaded {} groups", NODES.size());
+        
         return true;
     }
     
