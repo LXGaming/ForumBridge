@@ -84,7 +84,7 @@ public final class IntegrationManager {
             IdentityModel identity = CRAPI.getInstance().getForumEndpoint().getIdentity(uniqueId).sync();
             Collection<String> groups = CRAPI.getInstance().getForumEndpoint().getGroups(identity.getUserId()).sync();
             
-            BridgeImpl.getInstance().getLogger().debug("Found {} groups for {}", groups.size(), uniqueId);
+            BridgeImpl.getInstance().debug("Found {} groups for {}", groups.size(), uniqueId);
             
             boolean primaryGroup = false;
             for (Map.Entry<String, InheritanceNode> entry : NODES.entrySet()) {
@@ -119,17 +119,17 @@ public final class IntegrationManager {
             
             if (!primaryGroup) {
                 if (setPrimaryGroup(user, "default")) {
-                    BridgeImpl.getInstance().getLogger().debug("Set default as primary group for {}", uniqueId);
+                    BridgeImpl.getInstance().debug("Set default as primary group for {}", uniqueId);
                 } else {
                     BridgeImpl.getInstance().getLogger().warn("Failed to set primary group for {}", uniqueId);
                 }
             }
             
             LuckPermsProvider.get().getUserManager().saveUser(user).get(30000L, TimeUnit.MILLISECONDS);
-            BridgeImpl.getInstance().getLogger().debug("Successfully updated groups for {}", uniqueId);
+            BridgeImpl.getInstance().debug("Successfully updated groups for {}", uniqueId);
             return true;
         } catch (Exception ex) {
-            BridgeImpl.getInstance().getLogger().debug("Failed to update groups for {}: {}", uniqueId, ex.getMessage());
+            BridgeImpl.getInstance().debug("Failed to update groups for {}: {}", uniqueId, ex.getMessage());
             return false;
         }
     }
@@ -137,13 +137,13 @@ public final class IntegrationManager {
     public static boolean updateUser(UUID uniqueId, String username) {
         try {
             if (CRAPI.getInstance().getForumEndpoint().updateMinecraftUser(uniqueId, username).sync()) {
-                BridgeImpl.getInstance().getLogger().debug("Successfully updated username for {}", uniqueId.toString());
+                BridgeImpl.getInstance().debug("Successfully updated username for {}", uniqueId.toString());
                 return true;
             }
             
             return false;
         } catch (Exception ex) {
-            BridgeImpl.getInstance().getLogger().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
+            BridgeImpl.getInstance().debug("Failed to update username for {}: {}", uniqueId.toString(), ex.getMessage());
             return false;
         }
     }
@@ -155,7 +155,7 @@ public final class IntegrationManager {
         
         DataMutateResult result = user.setPrimaryGroup(group);
         if (result == DataMutateResult.SUCCESS) {
-            BridgeImpl.getInstance().getLogger().debug("Set {} as primary group for {} ({})", group, user.getUsername(), user.getUniqueId());
+            BridgeImpl.getInstance().debug("Set {} as primary group for {} ({})", group, user.getUsername(), user.getUniqueId());
             return true;
         } else if (result == DataMutateResult.FAIL_ALREADY_HAS) {
             return true;

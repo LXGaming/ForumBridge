@@ -21,6 +21,8 @@ import java.util.Set;
 
 public interface Config {
     
+    boolean isDebug();
+    
     Map<String, String> getGroups();
     
     Set<String> getExternalGroups();

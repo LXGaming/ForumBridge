@@ -58,6 +58,12 @@ public class BridgeImpl extends Bridge {
         }
     }
     
+    public void debug(String format, Object... arguments) {
+        if (getConfig() != null && getConfig().isDebug()) {
+            getLogger().info(format, arguments);
+        }
+    }
+    
     public static BridgeImpl getInstance() {
         return (BridgeImpl) Bridge.getInstance();
     }

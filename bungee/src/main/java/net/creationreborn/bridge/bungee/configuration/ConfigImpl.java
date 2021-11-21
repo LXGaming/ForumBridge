@@ -25,8 +25,14 @@ import java.util.Set;
 
 public class ConfigImpl implements Config {
     
+    private boolean debug;
     private Map<String, String> groups = new LinkedHashMap<>();
     private Set<String> externalGroups = new LinkedHashSet<>();
+    
+    @Override
+    public boolean isDebug() {
+        return debug;
+    }
     
     @Override
     public Map<String, String> getGroups() {
