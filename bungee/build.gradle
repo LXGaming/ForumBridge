@@ -1,26 +1,19 @@
-apply plugin: "java"
-apply plugin: "signing"
+plugins {
+    id "com.github.johnrengelman.shadow"
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = "net.creationreborn"
 archivesBaseName = "forumbridge-bungee"
-version = version
 
 configurations {
-    provided {
-        compile.extendsFrom(provided)
-    }
-
-    compileJava.dependsOn(":common:build")
 }
 
 repositories {
-    jcenter()
     maven {
-        name = "creation-reborn"
-        url = "https://dl.bintray.com/creation-reborn/maven"
+        name = "covers1624"
+        url = "https://maven.covers1624.net/"
     }
     maven {
         name = "md-5"
@@ -33,62 +26,33 @@ repositories {
 }
 
 dependencies {
-    compile(project(path: ":common")) {
+    implementation(project(path: ":forumbridge-common")) {
         exclude(module: "crapi")
         exclude(module: "gson")
         exclude(module: "guava")
-        exclude(module: "luckperms-api")
+        exclude(module: "api")
     }
-    provided(project(path: ":common", configuration: "provided"))
-    provided("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
-    provided("net.md-5:bungeecord-api:1.15-SNAPSHOT")
+    compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
+    compileOnly("net.md-5:bungeecord-api:1.15-SNAPSHOT")
+}
+
+compileJava {
+    dependsOn(":forumbridge-common:build")
 }
 
 jar {
-    from {
-        (configurations.compile - configurations.provided).findAll({
-            it.isDirectory() || it.name.endsWith(".jar")
-        }).collect({
-            it.isDirectory() ? it : zipTree(it)
-        })
-    }
+    enabled = false
+    dependsOn("shadowJar")
 }
 
 processResources {
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     from (sourceSets.main.resources.srcDirs) {
         include("bungee.yml")
         expand("name": "ForumBridge", "version": version)
     }
 }
 
-task signJar {
-    doFirst {
-        if (!project.hasProperty("signing.keyStorePath") || !project.hasProperty("signing.secretKeyRingFile")) {
-            project.logger.warn("========== [WARNING] ==========")
-            project.logger.warn("")
-            project.logger.warn("   This build is not signed!   ")
-            project.logger.warn("")
-            project.logger.warn("========== [WARNING] ==========")
-            throw new StopExecutionException()
-        }
-    }
-
-    doLast {
-        configurations.archives.allArtifacts.files.each {
-            ant.signjar(
-                jar: it,
-                alias: project.property("signing.alias"),
-                storepass: project.property("signing.keyStorePassword"),
-                keystore: project.property("signing.keyStorePath"),
-                keypass: project.property("signing.keyStorePassword"),
-                preservelastmodified: project.property("signing.preserveLastModified"),
-                tsaurl: project.property("signing.timestampAuthority"),
-                digestalg: project.property("signing.digestAlgorithm")
-            )
-            project.logger.lifecycle("JAR Signed: " + it.name)
-
-            signing.sign(it)
-            project.logger.lifecycle("PGP Signed: " + it.name)
-        }
-    }
+shadowJar {
+    archiveClassifier.set(null)
 }
