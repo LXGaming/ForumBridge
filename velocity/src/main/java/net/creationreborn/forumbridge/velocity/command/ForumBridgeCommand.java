@@ -34,7 +34,7 @@ public class ForumBridgeCommand implements Command {
     public void execute(@NonNull CommandSource source, String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload") && source.hasPermission("forumbridge.reload.base")) {
             VelocityPlugin.getInstance().getProxy().getScheduler().buildTask(VelocityPlugin.getInstance(), () -> {
-                if (ForumBridgeImpl.getInstance().reloadForumBridge()) {
+                if (ForumBridgeImpl.getInstance().reload()) {
                     source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("Configuration reloaded", TextColor.GREEN)));
                 } else {
                     source.sendMessage(VelocityToolbox.getTextPrefix().append(TextComponent.of("An error occurred. Please check the console", TextColor.RED)));

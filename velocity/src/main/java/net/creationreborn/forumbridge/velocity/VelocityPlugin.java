@@ -72,7 +72,7 @@ public class VelocityPlugin {
                     }
                 });
         
-        forumBridge.loadForumBridge();
+        forumBridge.load();
         
         getProxy().getCommandManager().register("forumbridge", new ForumBridgeCommand());
         getProxy().getEventManager().register(getInstance(), new VelocityListener());

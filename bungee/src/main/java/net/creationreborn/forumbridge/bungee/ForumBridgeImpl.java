@@ -38,16 +38,16 @@ public class ForumBridgeImpl extends ForumBridge {
     }
     
     @Override
-    public void loadForumBridge() {
+    public void load() {
         getLogger().info("Initializing...");
-        reloadForumBridge();
+        reload();
         PacketManager.buildPackets();
         registerNetworkHandler(NetworkHandlerImpl.class);
         getLogger().info("{} v{} has loaded", ForumBridge.NAME, ForumBridge.VERSION);
     }
     
     @Override
-    public boolean reloadForumBridge() {
+    public boolean reload() {
         if (!getConfiguration().loadConfiguration()) {
             return false;
         }

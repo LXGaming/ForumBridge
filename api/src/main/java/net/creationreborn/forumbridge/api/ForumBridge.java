@@ -39,9 +39,9 @@ public abstract class ForumBridge {
         instance = this;
     }
     
-    protected abstract void loadForumBridge();
+    protected abstract void load();
     
-    protected abstract boolean reloadForumBridge();
+    protected abstract boolean reload();
     
     public abstract boolean registerNetworkHandler(Class<? extends NetworkHandler> networkHandlerClass);
     

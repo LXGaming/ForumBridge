@@ -37,7 +37,7 @@ public class PaymentPacket implements Packet {
     
     @Override
     public void process(NetworkHandler networkHandler) {
-        networkHandler.handlePayment(this);
+        networkHandler.handle(this);
     }
     
     public String getItem() {

@@ -23,7 +23,7 @@ public interface NetworkHandler {
     
     boolean handle(Packet packet);
     
-    void handlePayment(PaymentPacket packet);
+    void handle(PaymentPacket packet);
     
-    void handleRegistration(RegistrationPacket packet);
+    void handle(RegistrationPacket packet);
 }

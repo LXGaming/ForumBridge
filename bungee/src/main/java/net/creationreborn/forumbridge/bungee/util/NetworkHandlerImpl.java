@@ -32,7 +32,7 @@ public class NetworkHandlerImpl implements NetworkHandler {
     }
     
     @Override
-    public void handlePayment(PaymentPacket packet) {
+    public void handle(PaymentPacket packet) {
         ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(packet.getMinecraftUniqueId());
         if (player == null || !player.isConnected()) {
             return;
@@ -42,7 +42,7 @@ public class NetworkHandlerImpl implements NetworkHandler {
     }
     
     @Override
-    public void handleRegistration(RegistrationPacket packet) {
+    public void handle(RegistrationPacket packet) {
         ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(packet.getMinecraftUsername());
         if (player == null || !player.isConnected()) {
             return;

@@ -33,7 +33,7 @@ public class ForumBridgeCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload") && sender.hasPermission("forumbridge.reload.base")) {
             BungeePlugin.getInstance().getProxy().getScheduler().runAsync(BungeePlugin.getInstance(), () -> {
-                if (ForumBridgeImpl.getInstance().reloadForumBridge()) {
+                if (ForumBridgeImpl.getInstance().reload()) {
                     sender.sendMessage(BungeeToolbox.getTextPrefix().append("Configuration reloaded").color(ChatColor.GREEN).create());
                 } else {
                     sender.sendMessage(BungeeToolbox.getTextPrefix().append("An error occurred. Please check the console").color(ChatColor.RED).create());

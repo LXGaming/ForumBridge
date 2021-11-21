@@ -29,7 +29,7 @@ public class RegistrationPacket implements Packet {
     
     @Override
     public void process(NetworkHandler networkHandler) {
-        networkHandler.handleRegistration(this);
+        networkHandler.handle(this);
     }
     
     public String getUsername() {

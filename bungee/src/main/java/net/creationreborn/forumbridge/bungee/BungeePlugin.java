@@ -43,7 +43,7 @@ public class BungeePlugin extends Plugin {
                     }
                 });
         
-        forumBridge.loadForumBridge();
+        forumBridge.load();
         
         getProxy().getPluginManager().registerCommand(getInstance(), new ForumBridgeCommand());
         getProxy().getPluginManager().registerListener(getInstance(), new BungeeListener());

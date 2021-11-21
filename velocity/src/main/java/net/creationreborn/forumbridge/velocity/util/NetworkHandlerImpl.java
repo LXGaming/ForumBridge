@@ -32,7 +32,7 @@ public class NetworkHandlerImpl implements NetworkHandler {
     }
     
     @Override
-    public void handlePayment(PaymentPacket packet) {
+    public void handle(PaymentPacket packet) {
         Player player = VelocityPlugin.getInstance().getProxy().getPlayer(packet.getMinecraftUniqueId()).orElse(null);
         if (player == null || !player.isActive()) {
             return;
@@ -42,7 +42,7 @@ public class NetworkHandlerImpl implements NetworkHandler {
     }
     
     @Override
-    public void handleRegistration(RegistrationPacket packet) {
+    public void handle(RegistrationPacket packet) {
         Player player = VelocityPlugin.getInstance().getProxy().getPlayer(packet.getMinecraftUsername()).orElse(null);
         if (player == null || !player.isActive()) {
             return;
