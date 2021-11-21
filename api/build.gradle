@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-archivesBaseName = "forumbridge-api"
+archivesBaseName = "bridge-api"
 
 blossom {
     replaceToken("@version@", version)
@@ -24,7 +24,7 @@ dependencies {
 
 processResources {
     from("../LICENSE")
-    rename("LICENSE", "LICENSE-ForumBridge")
+    rename("LICENSE", "LICENSE-Bridge")
 }
 
 publishing {

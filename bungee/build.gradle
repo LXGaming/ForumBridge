@@ -5,7 +5,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-archivesBaseName = "forumbridge-bungee"
+archivesBaseName = "bridge-bungee"
 
 configurations {
 }
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(path: ":forumbridge-common")) {
+    implementation(project(path: ":bridge-common")) {
         exclude(module: "crapi")
         exclude(module: "gson")
         exclude(module: "guava")
@@ -37,7 +37,7 @@ dependencies {
 }
 
 compileJava {
-    dependsOn(":forumbridge-common:build")
+    dependsOn(":bridge-common:build")
 }
 
 jar {
@@ -49,7 +49,7 @@ processResources {
     duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     from (sourceSets.main.resources.srcDirs) {
         include("bungee.yml")
-        expand("name": "ForumBridge", "version": version)
+        expand("name": "Bridge", "version": version)
     }
 }
 

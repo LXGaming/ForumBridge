@@ -1,7 +1,7 @@
 name: ${name}
-main: net.creationreborn.forumbridge.bungee.BungeePlugin
+main: net.creationreborn.bridge.bungee.BungeePlugin
 version: ${version}
-description: Forum Bridge
+description: Creation Reborn Bridge
 author: LX_Gaming
 website: https://creationreborn.net/
 depends: [LuckPerms]

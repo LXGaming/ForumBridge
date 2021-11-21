@@ -34,9 +34,9 @@ subprojects {
                 artifactId archivesBaseName
                 version version
                 pom {
-                    name = "ForumBridge"
-                    description = "Creation Reborn Forum Bridge"
-                    url = "https://github.com/creation-reborn/ForumBridge"
+                    name = "Bridge"
+                    description = "Creation Reborn Bridge"
+                    url = "https://github.com/creation-reborn/Bridge"
                     developers {
                         developer {
                             id = "lxgaming"
@@ -45,7 +45,7 @@ subprojects {
                     }
                     issueManagement {
                         system = "GitHub Issues"
-                        url = "https://github.com/creation-reborn/ForumBridge/issues"
+                        url = "https://github.com/creation-reborn/Bridge/issues"
                     }
                     licenses {
                         license {
@@ -54,9 +54,9 @@ subprojects {
                         }
                     }
                     scm {
-                        connection = "scm:git@github.com:creation-reborn/ForumBridge.git"
-                        developerConnection = "scm:git@github.com:creation-reborn/ForumBridge.git"
-                        url = "https://github.com/creation-reborn/ForumBridge"
+                        connection = "scm:git@github.com:creation-reborn/Bridge.git"
+                        developerConnection = "scm:git@github.com:creation-reborn/Bridge.git"
+                        url = "https://github.com/creation-reborn/Bridge"
                     }
                 }
             }

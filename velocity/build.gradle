@@ -5,7 +5,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-archivesBaseName = "forumbridge-velocity"
+archivesBaseName = "bridge-velocity"
 
 configurations {
 }
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(path: ":forumbridge-common")) {
+    implementation(project(path: ":bridge-common")) {
         exclude(module: "crapi")
         exclude(module: "gson")
         exclude(module: "guava")
@@ -43,7 +43,7 @@ dependencies {
 }
 
 compileJava {
-    dependsOn(":forumbridge-common:build")
+    dependsOn(":bridge-common:build")
 }
 
 jar {

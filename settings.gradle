@@ -9,5 +9,5 @@ include "velocity"
     "common",
     "velocity"
 ].each {
-    findProject(":$it")?.name = "forumbridge-$it"
+    findProject(":$it")?.name = "bridge-$it"
 }
