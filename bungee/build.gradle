@@ -30,7 +30,7 @@ dependencies {
     }
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-INTERIM")
     compileOnly("net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT")
-    compileOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.14.1")
+    compileOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.1")
 }
 
 compileJava {
