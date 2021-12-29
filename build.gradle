@@ -54,8 +54,8 @@ subprojects {
                         }
                     }
                     scm {
-                        connection = "scm:git@github.com:creation-reborn/Bridge.git"
-                        developerConnection = "scm:git@github.com:creation-reborn/Bridge.git"
+                        connection = "scm:git:https://github.com/creation-reborn/Bridge.git"
+                        developerConnection = "scm:git:https://github.com/creation-reborn/Bridge.git"
                         url = "https://github.com/creation-reborn/Bridge"
                     }
                 }
