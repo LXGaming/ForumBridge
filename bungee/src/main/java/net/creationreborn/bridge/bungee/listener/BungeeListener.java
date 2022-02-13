@@ -20,6 +20,7 @@ import net.creationreborn.bridge.bungee.BungeePlugin;
 import net.creationreborn.bridge.bungee.event.PaymentEventImpl;
 import net.creationreborn.bridge.bungee.event.RegistrationEventImpl;
 import net.creationreborn.bridge.common.manager.IntegrationManager;
+import net.creationreborn.bridge.common.util.StringUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -37,6 +38,10 @@ public class BungeeListener implements Listener {
     
     @EventHandler
     public void onPayment(PaymentEventImpl event) {
+        if (event.getModel().getMinecraftUniqueId() == null) {
+            return;
+        }
+        
         ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUniqueId());
         if (player == null || !player.isConnected()) {
             return;
@@ -47,6 +52,10 @@ public class BungeeListener implements Listener {
     
     @EventHandler
     public void onRegistration(RegistrationEventImpl event) {
+        if (StringUtils.isBlank(event.getModel().getMinecraftUsername())) {
+            return;
+        }
+        
         ProxiedPlayer player = BungeePlugin.getInstance().getProxy().getPlayer(event.getModel().getMinecraftUsername());
         if (player == null || !player.isConnected()) {
             return;
